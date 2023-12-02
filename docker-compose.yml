@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  tasker-api:
+    image: tasker-api
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8000:80"
+      - "8001:443"
+    environment:
+      - "ConnectionStrings__IdentityConnection=Server=db-identity;Database=tasker.identity;User=sa;Password=ASD1202one;"
+      - "ConnectionStrings__ApplicationConnection=Server=db-application;Database=tasker.application;User=sa;Password=ASD1202two;"
+    depends_on:
+      - db-identity
+      - db-application
+
+  db-identity:
+    image: "mcr.microsoft.com/mssql/server:2019-latest"
+    environment:
+      SA_PASSWORD: "ASD1202one"
+      ACCEPT_EULA: "Y"
+    ports:
+      - "1433:1433"
+    volumes:
+      - identity-db:/var/opt/mssql
+
+  db-application:
+    image: "mcr.microsoft.com/mssql/server:2019-latest"
+    environment:
+      SA_PASSWORD: "ASD1202two"
+      ACCEPT_EULA: "Y"
+    ports:
+      - "1434:1433"
+    volumes:
+      - application-db:/var/opt/mssql
+
+volumes:
+  identity-db:
+  application-db:
