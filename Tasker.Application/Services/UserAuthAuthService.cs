@@ -7,17 +7,17 @@ namespace Tasker.Application.Services;
 
 public class UserAuthAuthService : IUserAuthService
 {
-    private readonly ITokenService _tokenService;
     private readonly SignInManager<ApplicationUser> _signInManager;
     private readonly UserManager<ApplicationUser> _userManager;
+    private readonly ITokenService _tokenService;
 
     public UserAuthAuthService(ITokenService tokenService,
         SignInManager<ApplicationUser> signInManager,
         UserManager<ApplicationUser> userManager)
     {
+        _signInManager = signInManager;
         _tokenService = tokenService;
         _userManager = userManager;
-        _signInManager = signInManager;
     }
 
     public async Task<IdentityResult> RegisterUserAsync(RegisterModel model)
@@ -26,12 +26,12 @@ public class UserAuthAuthService : IUserAuthService
 
         return await _userManager.CreateAsync(user, model.Password);
     }
-    
+
     public async Task<LoginOperationResult> LoginUserAsync(LoginModel model)
     {
         var result = new LoginOperationResult();
-        
-        var user = await _userManager.FindByNameAsync(model.Email);
+
+        var user = await _userManager.FindByEmailAsync(model.Email);
 
         if (user is null)
         {
@@ -39,13 +39,16 @@ public class UserAuthAuthService : IUserAuthService
 
             return result;
         }
-        
-        var signInResult = await _signInManager.PasswordSignInAsync(user, model.Password, isPersistent: false,
+
+        var signInResult = await _signInManager.PasswordSignInAsync(
+            user: user, 
+            password: model.Password,
+            isPersistent: false,
             lockoutOnFailure: false);
 
         if (signInResult.Succeeded)
         {
-            result.Token = _tokenService.GenerateAccessToken(user);
+            result.Token = await _tokenService.GenerateTokensPairAsync(user);
         }
         else
         {

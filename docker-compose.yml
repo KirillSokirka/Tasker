@@ -8,34 +8,35 @@ services:
       dockerfile: Dockerfile
     ports:
       - "8000:80"
-      - "8001:443"
-    environment:
-      - "ConnectionStrings__IdentityConnection=Server=db-identity;Database=tasker.identity;User=sa;Password=ASD1202one;"
-      - "ConnectionStrings__ApplicationConnection=Server=db-application;Database=tasker.application;User=sa;Password=ASD1202two;"
-    depends_on:
-      - db-identity
-      - db-application
-
-  db-identity:
-    image: "mcr.microsoft.com/mssql/server:2019-latest"
-    environment:
-      SA_PASSWORD: "ASD1202one"
-      ACCEPT_EULA: "Y"
-    ports:
-      - "1433:1433"
-    volumes:
-      - identity-db:/var/opt/mssql
-
-  db-application:
-    image: "mcr.microsoft.com/mssql/server:2019-latest"
-    environment:
-      SA_PASSWORD: "ASD1202two"
-      ACCEPT_EULA: "Y"
-    ports:
-      - "1434:1433"
-    volumes:
-      - application-db:/var/opt/mssql
+  
+  tasker-db:
+      image: mcr.microsoft.com/mssql/server:2019-latest
+      environment:
+        ACCEPT_EULA: 'Y'
+        SA_PASSWORD: 'S3cur3P@ssW0rd!'
+      ports:
+        - "1433:1433"
+      volumes:
+        - mssql_data:/var/opt/mssql
+        - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+      command: >
+        bash -c "
+          /opt/mssql/bin/sqlservr &
+          for i in {1..50};
+          do
+            /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P 'S3cur3P@ssW0rd!' -Q 'SELECT 1' && break || sleep 1;
+          done
+          if [ $$? -eq 0 ]
+          then
+            /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P 'S3cur3P@ssW0rd!' -i /docker-entrypoint-initdb.d/init.sql
+          else
+            echo 'SQL Server took too long to start, initialization script was not executed.'
+            exit 1
+          fi
+          wait
+        "
 
 volumes:
-  identity-db:
-  application-db:
+    mssql_data:
+        driver: local
+  

@@ -20,4 +20,8 @@
       <ProjectReference Include="..\Tasker.Domain\Tasker.Domain.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Migrations\ApplicationDb\" />
+    </ItemGroup>
+
 </Project>

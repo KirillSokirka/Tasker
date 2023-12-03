@@ -29,11 +29,11 @@ public class TokenService : ITokenService
         _findByIdQuery = byIdQuery;
     }
 
-    public string GenerateAccessToken(ApplicationUser user)
+    public async Task<TokenModel> GenerateTokensPairAsync(ApplicationUser user)
     {
-        var jwtSettings = _configuration.GetSection("JwtSettings");
+        var jwtSettings = _configuration.GetSection("Jwt");
 
-        var secretKey = Encoding.ASCII.GetBytes(jwtSettings["SecretKey"]!);
+        var secretKey = Encoding.ASCII.GetBytes(jwtSettings["Key"]!);
 
         var tokenHandler = new JwtSecurityTokenHandler();
 
@@ -53,21 +53,24 @@ public class TokenService : ITokenService
         };
 
         var token = tokenHandler.CreateToken(descriptor);
+        
+        var refreshToken = GenerateRefreshToken();
 
-        return tokenHandler.WriteToken(token);
+        var saveResult = await SaveRefreshTokenAsync(user.Id, refreshToken);
+        
+        if (saveResult is false)
+        {
+            throw new AuthenticationException("Invalid client request");
+        }
+        
+        return new TokenModel
+        {
+            Token = tokenHandler.WriteToken(token),
+            RefreshToken = refreshToken
+        };
     }
-
-    public string GenerateRefreshToken()
-    {
-        var randomNumber = new byte[32];
-
-        using var rng = RandomNumberGenerator.Create();
-        rng.GetBytes(randomNumber);
-
-        return Convert.ToBase64String(randomNumber);
-    }
-
-    public async Task<RefreshTokenModel> RefreshToken(RefreshTokenModel tokenModel)
+    
+    public async Task<TokenModel> RefreshTokenAsync(RefreshTokenModel tokenModel)
     {
         var principal = GetPrincipalFromExpiredToken(tokenModel.Token);
 
@@ -76,7 +79,7 @@ public class TokenService : ITokenService
             throw new AuthenticationException("Invalid client request");
 
         var user = await _findUserByNameQuery.ExecuteAsync(username);
-
+        
         if (user is null ||
             user.RefreshToken != tokenModel.RefreshToken ||
             user.RefreshTokenExpiryTime <= DateTime.Now)
@@ -84,30 +87,27 @@ public class TokenService : ITokenService
             throw new AuthenticationException("Invalid client request");
         }
 
-        var newJwtToken = GenerateAccessToken(user);
-        var newRefreshToken = GenerateRefreshToken();
-
-        var saveResult = await SaveRefreshTokenAsync(user.Id, newRefreshToken);
-
-        if (saveResult is false)
-        {
-            throw new AuthenticationException("Invalid client request");
-        }
-
-        return new RefreshTokenModel
-        {
-            Token = newJwtToken,
-            RefreshToken = newRefreshToken
-        };
+        var newTokens = await GenerateTokensPairAsync(user);
+        
+        return newTokens;
     }
 
     #region Private Methods
+    
+    private static string GenerateRefreshToken()
+    {
+        var randomNumber = new byte[32];
 
+        using var rng = RandomNumberGenerator.Create();
+        rng.GetBytes(randomNumber);
+
+        return Convert.ToBase64String(randomNumber);
+    }
+    
     private ClaimsPrincipal GetPrincipalFromExpiredToken(string token)
     {
-        var key = Encoding.UTF8.GetBytes(_configuration["JwtSettings:SecretKey"] ??
-                                         throw new KeyNotFoundException(
-                                             "Key should be specified"));
+        var key = Encoding.UTF8.GetBytes(_configuration["Jwt:Key"] ??
+                                         throw new KeyNotFoundException("Key should be specified"));
 
         var tokenValidationParameters = new TokenValidationParameters
         {
@@ -135,14 +135,15 @@ public class TokenService : ITokenService
         var user = await _findByIdQuery.ExecuteAsync(userId);
 
         if (user == null) return false;
-        
+
         user.RefreshToken = refreshToken;
+        
         user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7);
 
         var result = await _updateUserCommand.ExecuteAsync(user);
 
         return result.Succeeded;
-
     }
+
     #endregion
 }

@@ -6,7 +6,6 @@ namespace Tasker.Application.Interfaces;
 
 public interface ITokenService
 {
-    string GenerateAccessToken(ApplicationUser user);
-    public string GenerateRefreshToken();
-    Task<RefreshTokenModel> RefreshToken(RefreshTokenModel tokenModel);
+    Task<TokenModel> GenerateTokensPairAsync(ApplicationUser user);
+    Task<TokenModel> RefreshTokenAsync(RefreshTokenModel tokenModel);
 }

@@ -17,5 +17,5 @@ public class TokenController : ControllerBase
     
     [HttpPost("refresh-token")]
     public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenModel refreshTokenModel)
-        => new ObjectResult(await _tokenService.RefreshToken(refreshTokenModel));
+        => new ObjectResult(await _tokenService.RefreshTokenAsync(refreshTokenModel));
 }

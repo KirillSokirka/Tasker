@@ -11,6 +11,7 @@ using Tasker.Application.Queries;
 using Tasker.Application.Services;
 using Tasker.Domain;
 using Tasker.Domain.Entities.Identity;
+using Tasker.Infrastructure.Data.Application;
 using Tasker.Infrastructure.Data.Identity;
 using Tasker.Infrastructure.Data.Seed;
 
@@ -63,17 +64,29 @@ var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
-    
+
+    var applicationContext = services.GetRequiredService<ApplicationContext>();
+
+    if (applicationContext.Database.GetPendingMigrations().Any())
+    {
+        applicationContext.Database.Migrate();
+    }
+
+    var identityContext = services.GetRequiredService<IdentityContext>();
+
+    if (identityContext.Database.GetPendingMigrations().Any())
+    {
+        identityContext.Database.Migrate();
+    }
+
     var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
+
 
     await IdentityDbSeeder.SeedRolesAsync(roleManager);
 }
 
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+app.UseSwagger();
+app.UseSwaggerUI();
 
 app.UseAuthentication();
 app.UseAuthorization();

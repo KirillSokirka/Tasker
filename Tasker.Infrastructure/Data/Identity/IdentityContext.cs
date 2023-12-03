@@ -8,8 +8,10 @@ public class IdentityContext : IdentityDbContext<ApplicationUser>
 {
     public IdentityContext(DbContextOptions<IdentityContext> options)
         : base(options)
-    { }
-    
+    {
+    }
+
     public IdentityContext()
-    { }
+    {
+    }
 }
