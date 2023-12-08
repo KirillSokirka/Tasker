@@ -7,7 +7,12 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="7.0.14" />
+    </ItemGroup>
+
+    <ItemGroup>
       <ProjectReference Include="..\Tasker.Domain\Tasker.Domain.csproj" />
+      <ProjectReference Include="..\Tasker.Infrastructure\Tasker.Infrastructure.csproj" />
     </ItemGroup>
 
 </Project>

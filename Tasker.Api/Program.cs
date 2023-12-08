@@ -7,7 +7,9 @@ using Tasker.Application.Commands;
 using Tasker.Application.Interfaces;
 using Tasker.Application.Interfaces.Commands;
 using Tasker.Application.Interfaces.Queries;
+using Tasker.Application.Interfaces.Repositories;
 using Tasker.Application.Queries;
+using Tasker.Application.Repositories;
 using Tasker.Application.Services;
 using Tasker.Domain;
 using Tasker.Domain.Entities.Identity;
@@ -27,6 +29,7 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
     .AddEntityFrameworkStores<IdentityContext>()
     .AddDefaultTokenProviders();
 
+builder.Services.AddTransient<IProjectRepository, ProjectRepository>();
 builder.Services.AddTransient<IUserAuthService, UserAuthAuthService>();
 builder.Services.AddTransient<ITokenService, TokenService>();
 builder.Services.AddTransient<IFindUserByNameQuery, FindUserByNameQuery>();
