@@ -8,6 +8,7 @@ using Tasker.Application.Interfaces;
 using Tasker.Application.Interfaces.Commands;
 using Tasker.Application.Interfaces.Queries;
 using Tasker.Application.Interfaces.Repositories;
+using Tasker.Application.MappingProfiles;
 using Tasker.Application.Queries;
 using Tasker.Application.Repositories;
 using Tasker.Application.Services;
@@ -35,6 +36,8 @@ builder.Services.AddTransient<ITokenService, TokenService>();
 builder.Services.AddTransient<IFindUserByNameQuery, FindUserByNameQuery>();
 builder.Services.AddTransient<IFindByIdQuery, FindUserByIdQuery>();
 builder.Services.AddTransient<IUpdateUserCommand, UpdateUserCommand>();
+
+builder.Services.AddAutoMapper(typeof(MappingProfile));
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();

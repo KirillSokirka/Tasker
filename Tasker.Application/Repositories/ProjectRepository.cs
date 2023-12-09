@@ -1,4 +1,6 @@
-﻿using Tasker.Application.Interfaces.Repositories;
+﻿using AutoMapper;
+using Tasker.Application.DTOs;
+using Tasker.Application.Interfaces.Repositories;
 using Tasker.Domain.Entities.Application;
 using Tasker.Infrastructure.Data.Application;
 
@@ -7,34 +9,40 @@ namespace Tasker.Application.Repositories
     public class ProjectRepository : IProjectRepository
     {
         private readonly ApplicationContext _context;
+        
+        private readonly IMapper _mapper;
 
-        public ProjectRepository(ApplicationContext context) { _context = context; }
-
-        public bool Create(string title)
+        public ProjectRepository(ApplicationContext context, IMapper mapper)
         {
-            var proj = _context.Projects.FirstOrDefault(p => p.Title == title);
+            _context = context;
+            _mapper = mapper;
+        }
 
-            if (proj != null)
+        public bool Create(ProjectDTO dto)
+        {
+            var project = _context.Projects.FirstOrDefault(p => p.Title == dto.Title);
+
+            if (project != null)
             {
                 return false;
             }
 
-            _context.Projects.Add(new Project() { Id = Guid.NewGuid().ToString(), Title = title });
+            _context.Projects.Add(new Project() { Id = Guid.NewGuid().ToString(), Title = dto.Title });
             _context.SaveChanges();
 
             return true;
         }
 
-        public bool Update(string id, string title)
+        public bool Update(string id, ProjectDTO dto)
         {
-            var proj = Get(id);
+            var proj = _context.Projects.FirstOrDefault(b => b.Id == id);
 
             if (proj == null)
             {
                 return false;
             }
 
-            proj.Title = title;
+            proj.Title = dto.Title;
             _context.SaveChanges();
 
             return true;
@@ -42,7 +50,7 @@ namespace Tasker.Application.Repositories
 
         public bool Delete(string id)
         {
-            var proj = Get(id);
+            var proj = _context.Projects.FirstOrDefault(b => b.Id == id);
 
             if (proj == null)
             {
@@ -55,9 +63,10 @@ namespace Tasker.Application.Repositories
             return true;
         }
 
-        public Project? Get(string id)
+        public ProjectDTO? Get(string id)
         {
-            return _context.Projects.FirstOrDefault(b => b.Id == id);
+            var project = _context.Projects.FirstOrDefault(b => b.Id == id);
+            return _mapper.Map<ProjectDTO>(project);
         }
     }
 }

@@ -1,12 +1,13 @@
-﻿using Tasker.Domain.Entities.Application;
+﻿using Tasker.Application.DTOs;
+using Tasker.Domain.Entities.Application;
 
 namespace Tasker.Application.Interfaces.Repositories
 {
     public interface IProjectRepository
     {
-        Project? Get(string title);
-        bool Create(string title);
-        bool Update(string id, string title);
+        ProjectDTO? Get(string title);
+        bool Create(ProjectDTO dto);
+        bool Update(string id, ProjectDTO dto);
         bool Delete(string id);
     }
 }

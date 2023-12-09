@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.Text.Json;
+using Tasker.Application.DTOs;
 using Tasker.Application.Interfaces.Repositories;
 
 namespace Tasker.Controllers
@@ -13,29 +14,29 @@ namespace Tasker.Controllers
         public ProjectController(IProjectRepository projectRepository) { _projectRepository = projectRepository; }
 
         [HttpGet("{id}")]
-        public IActionResult Project([FromRoute]string id)
+        public IActionResult Get([FromRoute]string id)
         {
             var proj = _projectRepository.Get(id);
             return proj == null ? NotFound() : Ok(JsonSerializer.Serialize(proj));
         }
 
-        [HttpPost("{title}")]
-        public IActionResult Post([FromRoute]string title)
+        [HttpPost]
+        public IActionResult Post([FromBody]ProjectDTO dto)
         {
-            var created = _projectRepository.Create(title);
+            var created = _projectRepository.Create(dto);
 
             if (!created) 
             {
-                return Conflict(new { error = $"Project with name {title} already exists" });
+                return Conflict(new { error = $"Project with name {dto.Title} already exists" });
             }
 
             return Ok();
         }
 
-        [HttpPut("{id}/{title}")]
-        public IActionResult Put([FromRoute] string id, [FromRoute] string title)
+        [HttpPut("{id}")]
+        public IActionResult Update([FromRoute]string id, [FromBody]ProjectDTO dto)
         {
-            var updated = _projectRepository.Update(id, title);
+            var updated = _projectRepository.Update(id, dto);
 
             if (!updated)
             {
