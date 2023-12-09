@@ -1,62 +1,58 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using System.Text.Json;
 using Tasker.Application.DTOs;
 using Tasker.Application.Interfaces.Repositories;
 
 namespace Tasker.Controllers
 {
-    [Route("api/[controller]")]
     [ApiController]
+    [Route("api/projects")]
     public class ProjectController : ControllerBase
     {
-        private IProjectRepository _projectRepository;
+        private readonly IProjectRepository _projectRepository;
 
-        public ProjectController(IProjectRepository projectRepository) { _projectRepository = projectRepository; }
+        public ProjectController(IProjectRepository projectRepository)
+        {
+            _projectRepository = projectRepository;
+        }
 
         [HttpGet("{id}")]
-        public IActionResult Get([FromRoute]string id)
+        public async Task<IActionResult> Get([FromRoute] string id)
         {
-            var proj = _projectRepository.Get(id);
-            return proj == null ? NotFound() : Ok(JsonSerializer.Serialize(proj));
+            var dto = await _projectRepository.GetAsync(id);
+
+            return dto is null
+                ? NotFound()
+                : Ok(dto);
         }
 
         [HttpPost]
-        public IActionResult Post([FromBody]ProjectDTO dto)
+        public async Task<IActionResult> Post([FromBody] ProjectDto dto)
         {
-            var created = _projectRepository.Create(dto);
+            var createdDto = await _projectRepository.CreateAsync(dto);
 
-            if (!created) 
-            {
-                return Conflict(new { error = $"Project with name {dto.Title} already exists" });
-            }
-
-            return Ok();
+            return createdDto is null
+                ? Conflict(new { error = $"Project with name {dto.Title} already exists" })
+                : CreatedAtAction(nameof(Get), new { id = createdDto.Id }, createdDto);
         }
 
         [HttpPut("{id}")]
-        public IActionResult Update([FromRoute]string id, [FromBody]ProjectDTO dto)
+        public async Task<IActionResult> Update([FromRoute] string id, [FromBody] ProjectDto dto)
         {
-            var updated = _projectRepository.Update(id, dto);
+            var updatedDto = await _projectRepository.UpdateAsync(id, dto);
 
-            if (!updated)
-            {
-                return NotFound(new { error = $"Project with id {id} does not exist" });
-            }
-
-            return Ok();
+            return updatedDto is null
+                ? NotFound(new { error = $"Project with id {id} does not exist" })
+                : Ok(updatedDto);
         }
 
         [HttpDelete("{id}")]
-        public IActionResult Delete([FromRoute]string id)
+        public async Task<IActionResult> Delete([FromRoute] string id)
         {
-            var deleted = _projectRepository.Delete(id);
+            var deleted = await _projectRepository.DeleteAsync(id);
 
-            if (!deleted)
-            {
-                return NotFound(new { error = $"Project with id {id} does not exist" });
-            }
-
-            return Ok();
+            return deleted
+                ? NoContent()
+                : NotFound(new { error = $"Project with id {id} does not exist" });
         }
     }
 }

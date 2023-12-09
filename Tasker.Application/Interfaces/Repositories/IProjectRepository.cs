@@ -5,9 +5,9 @@ namespace Tasker.Application.Interfaces.Repositories
 {
     public interface IProjectRepository
     {
-        ProjectDTO? Get(string title);
-        bool Create(ProjectDTO dto);
-        bool Update(string id, ProjectDTO dto);
-        bool Delete(string id);
+        Task<ProjectDto?> CreateAsync(ProjectDto projectDto);
+        Task<ProjectDto?> UpdateAsync(string id, ProjectDto projectDto);
+        Task<bool> DeleteAsync(string id);
+        Task<ProjectDto?> GetAsync(string id);
     }
 }
