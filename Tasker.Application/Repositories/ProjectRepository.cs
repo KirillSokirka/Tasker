@@ -34,10 +34,8 @@ namespace Tasker.Application.Repositories
             return _mapper.Map<ProjectDto>(project);
         }
 
-        public async Task<ProjectDto?> UpdateAsync(string id, ProjectDto projectDto)
-        {
-            projectDto.Id = id;
-            
+        public async Task<ProjectDto?> UpdateAsync(ProjectDto projectDto)
+        {            
             var project = await _context.Projects.FindAsync(projectDto.Id);
             
             if (project is null)

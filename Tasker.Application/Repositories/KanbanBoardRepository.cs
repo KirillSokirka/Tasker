@@ -34,10 +34,8 @@ namespace Tasker.Application.Repositories
             return _mapper.Map<KanbanBoardDto>(board);
         }
 
-        public async Task<KanbanBoardDto?> UpdateAsync(string id, KanbanBoardDto KanbanBoardDto)
-        {
-            KanbanBoardDto.Id = id;
-            
+        public async Task<KanbanBoardDto?> UpdateAsync(KanbanBoardDto KanbanBoardDto)
+        {  
             var board = await _context.KanbanBoards.FindAsync(KanbanBoardDto.Id);
             
             if (board is null)

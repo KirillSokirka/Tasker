@@ -35,13 +35,13 @@ namespace Tasker.Controllers
                 : CreatedAtAction(nameof(Get), new { id = createdDto.Id }, createdDto);
         }
 
-        [HttpPut("{id}")]
-        public async Task<IActionResult> Update([FromRoute] string id, [FromBody] ProjectDto dto)
+        [HttpPut]
+        public async Task<IActionResult> Update([FromBody] ProjectDto dto)
         {
-            var updatedDto = await _projectRepository.UpdateAsync(id, dto);
+            var updatedDto = await _projectRepository.UpdateAsync(dto);
 
             return updatedDto is null
-                ? NotFound(new { error = $"Project with id {id} does not exist" })
+                ? NotFound(new { error = $"Project with id {dto.Id} does not exist" })
                 : Ok(updatedDto);
         }
 

@@ -35,13 +35,13 @@ namespace Tasker.Controllers
                 : CreatedAtAction(nameof(Get), new { id = createdDto.Id }, createdDto);
         }
 
-        [HttpPut("{id}")]
-        public async Task<IActionResult> Update([FromRoute] string id, [FromBody] KanbanBoardDto dto)
+        [HttpPut]
+        public async Task<IActionResult> Update([FromBody] KanbanBoardDto dto)
         {
-            var updatedDto = await _boardRepository.UpdateAsync(id, dto);
+            var updatedDto = await _boardRepository.UpdateAsync(dto);
 
             return updatedDto is null
-                ? NotFound(new { error = $"KanbanBoard with id {id} does not exist" })
+                ? NotFound(new { error = $"KanbanBoard with id {dto.Id} does not exist" })
                 : Ok(updatedDto);
         }
 
