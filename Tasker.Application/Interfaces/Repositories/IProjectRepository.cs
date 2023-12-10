@@ -1,5 +1,4 @@
 ﻿using Tasker.Application.DTOs;
-using Tasker.Domain.Entities.Application;
 
 namespace Tasker.Application.Interfaces.Repositories
 {

@@ -9,5 +9,6 @@ public class MappingProfile : Profile
     public MappingProfile()
     {
         CreateMap<Project, ProjectDto>().ReverseMap();
+        CreateMap<KanbanBoard, KanbanBoardDto>().ReverseMap();
     }
 }
