@@ -17,6 +17,7 @@ using Tasker.Domain.Entities.Identity;
 using Tasker.Infrastructure.Data.Application;
 using Tasker.Infrastructure.Data.Identity;
 using Tasker.Infrastructure.Data.Seed;
+using Tasker.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -33,6 +34,7 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
 builder.Services.AddTransient<IProjectRepository, ProjectRepository>();
 builder.Services.AddTransient<IKanbanBoardRepository, KanbanBoardRepository>();
 builder.Services.AddTransient<IReleaseRepository, ReleaseRepository>();
+builder.Services.AddTransient<ITaskStatusRepository, TaskStatusRepository>();
 builder.Services.AddTransient<IUserAuthService, UserAuthAuthService>();
 builder.Services.AddTransient<ITokenService, TokenService>();
 builder.Services.AddTransient<IFindUserByNameQuery, FindUserByNameQuery>();
@@ -68,6 +70,8 @@ builder.Services.AddAuthentication(x =>
 builder.Services.AddAuthorization();
 
 var app = builder.Build();
+
+app.UseMiddleware<ExceptionHandlerMiddleware>();
 
 using (var scope = app.Services.CreateScope())
 {
