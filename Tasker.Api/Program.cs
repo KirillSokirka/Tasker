@@ -32,6 +32,7 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
 
 builder.Services.AddTransient<IProjectRepository, ProjectRepository>();
 builder.Services.AddTransient<IKanbanBoardRepository, KanbanBoardRepository>();
+builder.Services.AddTransient<IReleaseRepository, ReleaseRepository>();
 builder.Services.AddTransient<IUserAuthService, UserAuthAuthService>();
 builder.Services.AddTransient<ITokenService, TokenService>();
 builder.Services.AddTransient<IFindUserByNameQuery, FindUserByNameQuery>();
