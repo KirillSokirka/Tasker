@@ -101,7 +101,7 @@ public class ApplicationContext : DbContext
             .HasOne(t => t.Status)
             .WithMany(ts => ts.Tasks)
             .HasForeignKey(t => t.TaskStatusId)
-            .IsRequired(); 
+            .IsRequired(false); 
 
         // Task and Release: Many-to-One
         modelBuilder.Entity<Task>()

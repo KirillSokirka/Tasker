@@ -44,10 +44,7 @@ namespace Tasker.Application.Repositories
                 return null;
             }
 
-            if(! await _context.KanbanBoards.AnyAsync(b => b.Id == statusDto.KanbanBoardId))
-            {
-                throw new InvalidEntityException($"KanbanBoard with id {statusDto.KanbanBoardId} doesnt exists");
-            }
+            await ValidateModel(statusDto);
 
             _mapper.Map(statusDto, status);
 
@@ -55,7 +52,7 @@ namespace Tasker.Application.Repositories
 
             return _mapper.Map<TaskStatusDto>(status);
         }
-
+        
         public async Task<bool> DeleteAsync(string id)
         {
             var status = await _context.TaskStatuses.FindAsync(id);
@@ -76,6 +73,14 @@ namespace Tasker.Application.Repositories
             var status = await _context.TaskStatuses.AsNoTracking().FirstOrDefaultAsync(s => s.Id == id);
             
             return status is not null ? _mapper.Map<TaskStatusDto>(status) : null;
+        }
+        
+        private async Task ValidateModel(TaskStatusDto statusDto)
+        {
+            if (!await _context.KanbanBoards.AnyAsync(b => b.Id == statusDto.KanbanBoardId))
+            {
+                throw new InvalidEntityException($"KanbanBoard with id {statusDto.KanbanBoardId} doesnt exists");
+            }
         }
     }
 

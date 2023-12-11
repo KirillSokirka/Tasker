@@ -18,14 +18,14 @@ namespace Tasker.Application.Repositories
             _mapper = mapper;
         }
 
-        public async Task<KanbanBoardDto?> CreateAsync(KanbanBoardDto KanbanBoardDto)
+        public async Task<KanbanBoardDto?> CreateAsync(KanbanBoardDto dto)
         {
-            if (await _context.KanbanBoards.AnyAsync(p => p.Title == KanbanBoardDto.Title))
+            if (await _context.KanbanBoards.AnyAsync(p => p.Title == dto.Title))
             {
                 return null;
             }
 
-            var board = _mapper.Map<KanbanBoard>(KanbanBoardDto);
+            var board = _mapper.Map<KanbanBoard>(dto);
             board.Id = Guid.NewGuid().ToString();
 
             await _context.KanbanBoards.AddAsync(board);
@@ -34,16 +34,16 @@ namespace Tasker.Application.Repositories
             return _mapper.Map<KanbanBoardDto>(board);
         }
 
-        public async Task<KanbanBoardDto?> UpdateAsync(KanbanBoardDto KanbanBoardDto)
+        public async Task<KanbanBoardDto?> UpdateAsync(KanbanBoardDto dto)
         {  
-            var board = await _context.KanbanBoards.FindAsync(KanbanBoardDto.Id);
+            var board = await _context.KanbanBoards.FindAsync(dto.Id);
             
             if (board is null)
             {
                 return null;
             }
 
-            _mapper.Map(KanbanBoardDto, board);
+            _mapper.Map(dto, board);
 
             await _context.SaveChangesAsync();
 
