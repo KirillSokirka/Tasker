@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Tasker.Application.DTOs;
+using Tasker.Application.DTOs.Application;
 using Tasker.Application.Interfaces.Repositories;
 
 namespace Tasker.Controllers

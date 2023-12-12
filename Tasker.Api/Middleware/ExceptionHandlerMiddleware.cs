@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
-using Tasker.Application.Exceptions;
+﻿using Tasker.Domain.Exceptions;
 
 namespace Tasker.Middleware
 {
@@ -20,13 +19,18 @@ namespace Tasker.Middleware
             }
             catch (InvalidEntityException exception)
             {
-                var response = context.Response;
-                response.ContentType = "application/json";
-
-                var message = exception.Message;
-                response.StatusCode = StatusCodes.Status408RequestTimeout;
-                await response.WriteAsync(message);
+                await GenerateResponse(context, exception.Message);
             }
+        }
+
+        private static async Task GenerateResponse(HttpContext context, string message)
+        {
+            var response = context.Response;
+            
+            response.ContentType = "application/json";
+            response.StatusCode = StatusCodes.Status500InternalServerError;
+            
+            await response.WriteAsync(message);
         }
     }
 }

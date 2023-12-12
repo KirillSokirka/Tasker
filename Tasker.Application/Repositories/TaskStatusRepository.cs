@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Tasker.Application.DTOs;
-using Tasker.Application.Exceptions;
 using Tasker.Application.Interfaces.Repositories;
+using Tasker.Domain.Exceptions;
 using Tasker.Infrastructure.Data.Application;
 using TaskStatus = Tasker.Domain.Entities.Application.TaskStatus;
 

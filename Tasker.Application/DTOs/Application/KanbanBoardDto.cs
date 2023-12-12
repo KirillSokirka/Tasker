@@ -1,8 +1,7 @@
-﻿namespace Tasker.Application.DTOs;
+﻿namespace Tasker.Application.DTOs.Application;
 
-public class KanbanBoardDto
+public class KanbanBoardDto : IdentityDto
 {
-    public string? Id { get; set; }
     public string Title { get; set; }
     public string? ProjectId { get; set; }
 }

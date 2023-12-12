@@ -12,5 +12,5 @@ public class TaskUpdateDto
     public TaskStatusDto? Status { get; set; }
     public ReleaseDto? Release { get; set; }
     public UserDto? Assignee { get; set; }
-    public TaskPriority Priority { get; set; } = TaskPriority.None;
+    public TaskPriority? Priority { get; set; }
 }

@@ -2,6 +2,7 @@
 using Tasker.Application.DTOs;
 using Tasker.Application.Resolvers.Interfaces;
 using Tasker.Domain.Entities.Application;
+using Tasker.Domain.Exceptions;
 using Tasker.Infrastructure.Data.Application;
 
 namespace Tasker.Application.Resolvers;
@@ -16,5 +17,6 @@ public class ProjectResolver : IResolver<Project, ProjectDto>
     }
 
     public async Task<Project> ResolveAsync(ProjectDto dto)
-        => await _context.Projects.FirstAsync(p => p.Id == dto.Id);
+        => await _context.Projects.FirstOrDefaultAsync(p => p.Id == dto.Id)
+           ?? throw new InvalidEntityException($"KanbanBoard with id {dto.Id} doesnt exists");
 }

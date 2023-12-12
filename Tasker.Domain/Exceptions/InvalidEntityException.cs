@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Tasker.Application.Exceptions
+﻿namespace Tasker.Domain.Exceptions
 {
     public class InvalidEntityException : Exception
     {

@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Tasker.Application.DTOs;
+using Tasker.Application.DTOs.Application;
 using Tasker.Application.Interfaces.Repositories;
 using Tasker.Domain.Entities.Application;
 using Tasker.Infrastructure.Data.Application;

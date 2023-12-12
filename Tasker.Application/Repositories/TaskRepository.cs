@@ -3,7 +3,9 @@ using Microsoft.EntityFrameworkCore;
 using Tasker.Application.DTOs;
 using Tasker.Application.DTOs.Application;
 using Tasker.Application.DTOs.Application.Task;
+using Tasker.Application.EntitiesExtension;
 using Tasker.Application.Interfaces.Repositories;
+using Tasker.Application.Resolvers.DTOs;
 using Tasker.Application.Resolvers.Interfaces;
 using Tasker.Domain.Entities.Application;
 using Tasker.Infrastructure.Data.Application;
@@ -13,19 +15,22 @@ namespace Tasker.Application.Repositories;
 
 public class TaskRepository : ITaskRepository
 {
-    private readonly ApplicationContext _context;
-    private readonly IResolver<User, UserDto> _userResolver;
+    private readonly IResolver<TaskResolvedPropertiesDto, TaskUpdateDto> _taskResolver;
     private readonly IResolver<Project, ProjectDto> _projectResolver;
-
+    private readonly IResolver<User, UserDto> _userResolver;
+    private readonly ApplicationContext _context;
     private readonly IMapper _mapper;
 
-    public TaskRepository(ApplicationContext context, IMapper mapper, IResolver<User, UserDto> userResolver,
+    public TaskRepository(ApplicationContext context, IMapper mapper, 
+        IResolver<TaskResolvedPropertiesDto, TaskUpdateDto> taskResolver,
+        IResolver<User, UserDto> userResolver,
         IResolver<Project, ProjectDto> projectResolver)
     {
+        _projectResolver = projectResolver;
+        _userResolver = userResolver;
+        _taskResolver = taskResolver;
         _context = context;
         _mapper = mapper;
-        _userResolver = userResolver;
-        _projectResolver = projectResolver;
     }
 
     public async Task<TaskDto?> CreateAsync(TaskDto dto)
@@ -43,25 +48,17 @@ public class TaskRepository : ITaskRepository
 
     public async Task<TaskDto?> UpdateAsync(TaskUpdateDto dto)
     {
-        var task = await _context.Tasks
-            .Include(t => t.Project)
-            .Include(t => t.Assignee)
-            .Include(t => t.Release)
-            .Include(t => t.Creator)
-            .Include(t => t.Status)
-            .FirstOrDefaultAsync(t => t.Id == dto.Id);
+        var task =  await GetTaskEntity(dto.Id);
 
         if (task is null)
         {
             return null;
         }
 
-        _mapper.Map(dto, task);
-        
-        task.ProjectId = dto.Project is not null 
-            ? (await _projectResolver.ResolveAsync(dto.Project)).Id 
-            : task.ProjectId;
-        
+        var resolvedProperties = await _taskResolver.ResolveAsync(dto);
+
+        task.Update(dto, resolvedProperties);
+
         _context.Entry(task).State = EntityState.Modified;
 
         await _context.SaveChangesAsync();
@@ -86,14 +83,17 @@ public class TaskRepository : ITaskRepository
 
     public async Task<TaskDto?> GetAsync(string id)
     {
-        var task = await _context.Tasks
+        var task = await GetTaskEntity(id);
+
+        return task is not null ? _mapper.Map<TaskDto>(task) : null;
+    }
+
+    private async Task<Task?> GetTaskEntity(string id)
+        => await _context.Tasks
             .Include(t => t.Project)
             .Include(t => t.Assignee)
             .Include(t => t.Release)
             .Include(t => t.Creator)
             .Include(t => t.Status)
             .AsNoTracking().FirstOrDefaultAsync(p => p.Id == id);
-
-        return task is not null ? _mapper.Map<TaskDto>(task) : null;
-    }
 }

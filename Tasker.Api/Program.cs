@@ -6,6 +6,7 @@ using Microsoft.IdentityModel.Tokens;
 using Tasker.Application.Commands;
 using Tasker.Application.DTOs;
 using Tasker.Application.DTOs.Application;
+using Tasker.Application.DTOs.Application.Task;
 using Tasker.Application.Interfaces;
 using Tasker.Application.Interfaces.Commands;
 using Tasker.Application.Interfaces.Queries;
@@ -14,6 +15,7 @@ using Tasker.Application.MappingProfiles;
 using Tasker.Application.Queries;
 using Tasker.Application.Repositories;
 using Tasker.Application.Resolvers;
+using Tasker.Application.Resolvers.DTOs;
 using Tasker.Application.Resolvers.Interfaces;
 using Tasker.Application.Services;
 using Tasker.Domain.Entities.Application;
@@ -50,6 +52,7 @@ builder.Services.AddTransient<IUpdateUserCommand, UpdateUserCommand>();
 
 builder.Services.AddScoped<IResolver<User, UserDto>, UserResolver>();
 builder.Services.AddScoped<IResolver<Project, ProjectDto>, ProjectResolver>();
+builder.Services.AddScoped<IResolver<TaskResolvedPropertiesDto, TaskUpdateDto>, TaskResolver>();
 
 builder.Services.AddAutoMapper(typeof(MappingProfile));
 
