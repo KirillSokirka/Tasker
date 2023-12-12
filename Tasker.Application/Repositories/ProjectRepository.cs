@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Tasker.Application.DTOs;
+using Tasker.Application.DTOs.Application;
 using Tasker.Application.Interfaces.Repositories;
 using Tasker.Domain.Entities.Application;
 using Tasker.Infrastructure.Data.Application;
@@ -71,6 +72,12 @@ namespace Tasker.Application.Repositories
             
             return project is not null ? _mapper.Map<ProjectDto>(project) : null;
         }
+
+        public async Task<List<ProjectDto>> GetAllAsync() =>
+        await _context.Projects
+            .AsNoTracking()
+            .Select(project => _mapper.Map<ProjectDto>(project))
+            .ToListAsync();
     }
 
 }

@@ -8,5 +8,6 @@ namespace Tasker.Application.Interfaces.Repositories
         Task<ProjectDto?> UpdateAsync(ProjectDto projectDto);
         Task<bool> DeleteAsync(string id);
         Task<ProjectDto?> GetAsync(string id);
+        Task<List<ProjectDto>> GetAllAsync();
     }
 }

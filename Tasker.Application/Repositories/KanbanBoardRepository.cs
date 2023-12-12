@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
-using Tasker.Application.DTOs;
 using Tasker.Application.DTOs.Application;
 using Tasker.Application.Interfaces.Repositories;
 using Tasker.Domain.Entities.Application;
@@ -71,6 +70,14 @@ namespace Tasker.Application.Repositories
             var board = await _context.KanbanBoards.AsNoTracking().FirstOrDefaultAsync(p => p.Id == id);
             
             return board is not null ? _mapper.Map<KanbanBoardDto>(board) : null;
+        }
+
+        public async Task<List<KanbanBoardDto>?> GetAllAsync()
+        {
+            var boards = new List<KanbanBoardDto>();
+            await _context.KanbanBoards.AsNoTracking().ForEachAsync(b => boards.Add(_mapper.Map<KanbanBoardDto>(b)));
+
+            return boards.Any() ? boards : null;
         }
     }
 

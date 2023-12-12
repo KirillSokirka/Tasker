@@ -110,4 +110,10 @@ public class TaskRepository : ITaskRepository
             .Include(t => t.Creator)
             .Include(t => t.Status)
             .AsNoTracking().FirstOrDefaultAsync(p => p.Id == id);
+
+    public async Task<List<TaskDto>> GetAllAsync() =>
+        await _context.Tasks
+            .AsNoTracking()
+            .Select(task => _mapper.Map<TaskDto>(task))
+            .ToListAsync();
 }

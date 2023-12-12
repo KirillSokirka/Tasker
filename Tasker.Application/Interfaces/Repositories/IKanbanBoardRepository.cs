@@ -1,5 +1,4 @@
-﻿using Tasker.Application.DTOs;
-using Tasker.Application.DTOs.Application;
+﻿using Tasker.Application.DTOs.Application;
 
 namespace Tasker.Application.Interfaces.Repositories
 {
@@ -9,5 +8,6 @@ namespace Tasker.Application.Interfaces.Repositories
         Task<KanbanBoardDto?> UpdateAsync(KanbanBoardDto dto);
         Task<bool> DeleteAsync(string id);
         Task<KanbanBoardDto?> GetAsync(string id);
+        Task<List<KanbanBoardDto>> GetAllAsync();
     }
 }

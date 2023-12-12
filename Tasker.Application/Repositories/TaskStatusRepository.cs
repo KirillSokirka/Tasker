@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Tasker.Application.DTOs;
+using Tasker.Application.DTOs.Application;
+using Tasker.Application.DTOs.Application.Task;
 using Tasker.Application.Interfaces.Repositories;
 using Tasker.Domain.Exceptions;
 using Tasker.Infrastructure.Data.Application;
@@ -82,6 +84,12 @@ namespace Tasker.Application.Repositories
                 throw new InvalidEntityException($"KanbanBoard with id {statusDto.KanbanBoardId} doesnt exists");
             }
         }
+
+        public async Task<List<TaskStatusDto>> GetAllAsync() =>
+        await _context.TaskStatuses
+            .AsNoTracking()
+            .Select(status => _mapper.Map<TaskStatusDto>(status))
+            .ToListAsync();
     }
 
 }

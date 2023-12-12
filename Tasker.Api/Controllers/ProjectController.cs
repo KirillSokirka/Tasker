@@ -15,6 +15,10 @@ namespace Tasker.Controllers
             _projectRepository = projectRepository;
         }
 
+        [HttpGet]
+        public async Task<IActionResult> GetAll()
+        => Ok(await _projectRepository.GetAllAsync());
+
         [HttpGet("{id}")]
         public async Task<IActionResult> Get([FromRoute] string id)
         {

@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Tasker.Application.DTOs;
+using Tasker.Application.DTOs.Application;
 using Tasker.Application.Interfaces.Repositories;
 using Tasker.Domain.Entities.Application;
 using Tasker.Infrastructure.Data.Application;
@@ -72,6 +73,12 @@ namespace Tasker.Application.Repositories
             
             return release is not null ? _mapper.Map<ReleaseDto>(release) : null;
         }
+
+        public async Task<List<ReleaseDto>> GetAllAsync() =>
+        await _context.Releases
+            .AsNoTracking()
+            .Select(release => _mapper.Map<ReleaseDto>(release))
+            .ToListAsync();
     }
 
 }

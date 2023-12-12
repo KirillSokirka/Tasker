@@ -2,6 +2,7 @@
 using Tasker.Application.DTOs.Application;
 using Tasker.Application.DTOs.Application.Task;
 using Tasker.Application.Interfaces.Repositories;
+using Tasker.Application.Repositories;
 
 namespace Tasker.Controllers;
 
@@ -15,6 +16,10 @@ public class TaskController : ControllerBase
     {
         _taskRepository = taskRepository;
     }
+
+    [HttpGet]
+    public async Task<IActionResult> GetAll()
+        => Ok(await _taskRepository.GetAllAsync());
 
     [HttpGet("{id}")]
     public async Task<IActionResult> Get([FromRoute] string id)

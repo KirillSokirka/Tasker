@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Tasker.Application.DTOs;
 using Tasker.Application.Interfaces.Repositories;
+using Tasker.Application.Repositories;
 
 namespace Tasker.Controllers
 {
@@ -14,6 +15,10 @@ namespace Tasker.Controllers
         {
             _releaseRepository = releaseRepository;
         }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAll()
+        => Ok(await _releaseRepository.GetAllAsync());
 
         [HttpGet("{id}")]
         public async Task<IActionResult> Get([FromRoute] string id)

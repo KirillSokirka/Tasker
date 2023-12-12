@@ -16,6 +16,10 @@ namespace Tasker.Controllers
             _boardRepository = boardRepository;
         }
 
+        [HttpGet]
+        public async Task<IActionResult> GetAll()
+        => Ok(await _boardRepository.GetAllAsync());
+
         [HttpGet("{id}")]
         public async Task<IActionResult> Get([FromRoute] string id)
         {
