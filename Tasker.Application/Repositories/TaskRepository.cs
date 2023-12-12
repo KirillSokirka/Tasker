@@ -10,6 +10,7 @@ using Tasker.Application.Resolvers.Interfaces;
 using Tasker.Domain.Entities.Application;
 using Tasker.Infrastructure.Data.Application;
 using Task = Tasker.Domain.Entities.Application.Task;
+using TaskStatus = Tasker.Domain.Entities.Application.TaskStatus;
 
 namespace Tasker.Application.Repositories;
 
@@ -18,17 +19,23 @@ public class TaskRepository : ITaskRepository
     private readonly IResolver<TaskResolvedPropertiesDto, TaskUpdateDto> _taskResolver;
     private readonly IResolver<Project, ProjectDto> _projectResolver;
     private readonly IResolver<User, UserDto> _userResolver;
+    private readonly IResolver<Release, ReleaseDto> _releaseResolver;
+    private readonly IResolver<TaskStatus, TaskStatusDto> _statusResolver;
     private readonly ApplicationContext _context;
     private readonly IMapper _mapper;
 
     public TaskRepository(ApplicationContext context, IMapper mapper, 
         IResolver<TaskResolvedPropertiesDto, TaskUpdateDto> taskResolver,
         IResolver<User, UserDto> userResolver,
-        IResolver<Project, ProjectDto> projectResolver)
+        IResolver<Project, ProjectDto> projectResolver,
+        IResolver<Release, ReleaseDto> releaseResolver,
+        IResolver<TaskStatus, TaskStatusDto> statusResolver)
     {
         _projectResolver = projectResolver;
         _userResolver = userResolver;
         _taskResolver = taskResolver;
+        _releaseResolver = releaseResolver;
+        _statusResolver = statusResolver;
         _context = context;
         _mapper = mapper;
     }
@@ -37,8 +44,15 @@ public class TaskRepository : ITaskRepository
     {
         var task = _mapper.Map<Task>(dto);
 
+        task.Id = Guid.NewGuid().ToString();
+
         task.Creator = await _userResolver.ResolveAsync(dto.Creator);
         task.Project = await _projectResolver.ResolveAsync(dto.Project);
+        task.Release = dto.Release is null ? null : await _releaseResolver.ResolveAsync(dto.Release);
+        task.Status = dto.Status is null ? null : await _statusResolver.ResolveAsync(dto.Status);
+        task.Assignee = dto.Assignee is null ? null : await _userResolver.ResolveAsync(dto.Assignee);
+
+        //_context.Releases.Attach(task.Release);
 
         await _context.Tasks.AddAsync(task);
         await _context.SaveChangesAsync();

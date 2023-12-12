@@ -24,6 +24,7 @@ using Tasker.Infrastructure.Data.Application;
 using Tasker.Infrastructure.Data.Identity;
 using Tasker.Infrastructure.Data.Seed;
 using Tasker.Middleware;
+using TaskStatus = Tasker.Domain.Entities.Application.TaskStatus;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -52,6 +53,8 @@ builder.Services.AddTransient<IUpdateUserCommand, UpdateUserCommand>();
 
 builder.Services.AddScoped<IResolver<User, UserDto>, UserResolver>();
 builder.Services.AddScoped<IResolver<Project, ProjectDto>, ProjectResolver>();
+builder.Services.AddScoped<IResolver<Release, ReleaseDto>, ReleaseResolver>();
+builder.Services.AddScoped<IResolver<TaskStatus, TaskStatusDto>, TaskStatusResolver>();
 builder.Services.AddScoped<IResolver<TaskResolvedPropertiesDto, TaskUpdateDto>, TaskResolver>();
 
 builder.Services.AddAutoMapper(typeof(MappingProfile));

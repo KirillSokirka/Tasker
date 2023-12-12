@@ -18,5 +18,5 @@ public class ProjectResolver : IResolver<Project, ProjectDto>
 
     public async Task<Project> ResolveAsync(ProjectDto dto)
         => await _context.Projects.FirstOrDefaultAsync(p => p.Id == dto.Id)
-           ?? throw new InvalidEntityException($"KanbanBoard with id {dto.Id} doesnt exists");
+           ?? throw new InvalidEntityException($"Project with id {dto.Id} doesnt exists");
 }

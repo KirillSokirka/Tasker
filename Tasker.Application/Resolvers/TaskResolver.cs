@@ -11,12 +11,15 @@ public class TaskResolver : IResolver<TaskResolvedPropertiesDto, TaskUpdateDto>
 {
     private readonly IResolver<User, UserDto> _userResolver;
     private readonly IResolver<Project, ProjectDto> _projectResolver;
+    private readonly IResolver<Release, ReleaseDto> _releaseResolver;
 
     public TaskResolver(IResolver<User, UserDto> userResolver,
-        IResolver<Project, ProjectDto> projectResolver)
+        IResolver<Project, ProjectDto> projectResolver,
+        IResolver<Release, ReleaseDto> releaseResolver)
     {
         _userResolver = userResolver;
         _projectResolver = projectResolver;
+        _releaseResolver = releaseResolver;
     }
 
     public async Task<TaskResolvedPropertiesDto> ResolveAsync(TaskUpdateDto dto)
@@ -31,6 +34,9 @@ public class TaskResolver : IResolver<TaskResolvedPropertiesDto, TaskUpdateDto>
                 : null,
             Project = dto.Project is not null
                 ? await _projectResolver.ResolveAsync(dto.Project)
+                : null,
+            Release = dto.Release is not null
+                ? await _releaseResolver.ResolveAsync(dto.Release)
                 : null
         };
 

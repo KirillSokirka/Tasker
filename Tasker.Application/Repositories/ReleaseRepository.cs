@@ -27,7 +27,7 @@ namespace Tasker.Application.Repositories
 
             var release = _mapper.Map<Release>(releaseDto);
             release.Id = Guid.NewGuid().ToString();
-            release.CreationDate = DateTime.Now; // why is this here
+            release.CreationDate = DateTime.Now;
 
             await _context.Releases.AddAsync(release);
             await _context.SaveChangesAsync();
