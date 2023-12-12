@@ -1,10 +1,9 @@
 ﻿using AutoMapper;
-using AutoMapper.Execution;
 using Tasker.Application.DTOs;
 using Tasker.Application.DTOs.Application;
+using Tasker.Application.DTOs.Application.KanbanBoard;
 using Tasker.Application.DTOs.Application.Task;
 using Tasker.Domain.Entities.Application;
-using Tasker.Domain.Enums;
 using Task = Tasker.Domain.Entities.Application.Task;
 using TaskStatus = Tasker.Domain.Entities.Application.TaskStatus;
 

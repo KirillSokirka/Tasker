@@ -1,10 +1,10 @@
-﻿using Tasker.Application.DTOs.Application;
+﻿using Tasker.Application.DTOs.Application.KanbanBoard;
 
 namespace Tasker.Application.Interfaces.Repositories
 {
     public interface IKanbanBoardRepository
     {
-        Task<KanbanBoardDto?> CreateAsync(KanbanBoardDto dto);
+        Task<KanbanBoardDto?> CreateAsync(KanbanBoardCreateDto dto);
         Task<KanbanBoardDto?> UpdateAsync(KanbanBoardDto dto);
         Task<bool> DeleteAsync(string id);
         Task<KanbanBoardDto?> GetAsync(string id);

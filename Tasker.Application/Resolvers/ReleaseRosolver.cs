@@ -1,10 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Tasker.Application.DTOs;
 using Tasker.Application.Resolvers.Interfaces;
 using Tasker.Domain.Entities.Application;
 using Tasker.Domain.Exceptions;
@@ -12,7 +6,7 @@ using Tasker.Infrastructure.Data.Application;
 
 namespace Tasker.Application.Resolvers
 {
-    public class ReleaseResolver : IResolver<Release, ReleaseDto>
+    public class ReleaseResolver : IResolver<Release, string>
     {
         private readonly ApplicationContext _context;
 
@@ -21,8 +15,8 @@ namespace Tasker.Application.Resolvers
             _context = context;
         }
 
-        public async Task<Release> ResolveAsync(ReleaseDto dto)
-            => await _context.Releases.FirstOrDefaultAsync(p => p.Id == dto.Id)
-               ?? throw new InvalidEntityException($"Release with id {dto.Id} doesnt exists");
+        public async Task<Release> ResolveAsync(string id)
+            => await _context.Releases.FirstOrDefaultAsync(p => p.Id == id)
+               ?? throw new InvalidEntityException($"Release with id {id} doesnt exists");
     }
 }

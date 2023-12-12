@@ -51,10 +51,10 @@ builder.Services.AddTransient<IFindUserByNameQuery, FindUserByNameQuery>();
 builder.Services.AddTransient<IFindByIdQuery, FindUserByIdQuery>();
 builder.Services.AddTransient<IUpdateUserCommand, UpdateUserCommand>();
 
-builder.Services.AddScoped<IResolver<User, UserDto>, UserResolver>();
-builder.Services.AddScoped<IResolver<Project, ProjectDto>, ProjectResolver>();
-builder.Services.AddScoped<IResolver<Release, ReleaseDto>, ReleaseResolver>();
-builder.Services.AddScoped<IResolver<TaskStatus, TaskStatusDto>, TaskStatusResolver>();
+builder.Services.AddScoped<IResolver<User, string>, UserResolver>();
+builder.Services.AddScoped<IResolver<Project, string>, ProjectResolver>();
+builder.Services.AddScoped<IResolver<Release, string>, ReleaseResolver>();
+builder.Services.AddScoped<IResolver<TaskStatus, string>, TaskStatusResolver>();
 builder.Services.AddScoped<IResolver<TaskResolvedPropertiesDto, TaskUpdateDto>, TaskResolver>();
 
 builder.Services.AddAutoMapper(typeof(MappingProfile));

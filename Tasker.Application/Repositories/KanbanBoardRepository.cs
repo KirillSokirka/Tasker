@@ -1,33 +1,48 @@
 ﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
-using Tasker.Application.DTOs.Application;
+using Tasker.Application.DTOs;
+using Tasker.Application.DTOs.Application.KanbanBoard;
 using Tasker.Application.Interfaces.Repositories;
+using Tasker.Application.Resolvers.Interfaces;
 using Tasker.Domain.Entities.Application;
 using Tasker.Infrastructure.Data.Application;
+using TaskStatus = Tasker.Domain.Entities.Application.TaskStatus;
 
 namespace Tasker.Application.Repositories
 {
     public class KanbanBoardRepository : IKanbanBoardRepository
     {
+        private readonly IResolver<Project, string> _projectResolver;
+        private readonly IResolver<TaskStatus, string> _statusResolver;
         private readonly ApplicationContext _context;
         private readonly IMapper _mapper;
 
-        public KanbanBoardRepository(ApplicationContext context, IMapper mapper)
+        public KanbanBoardRepository(ApplicationContext context, IMapper mapper,
+            IResolver<Project, string> projectResolver,
+            IResolver<TaskStatus, string> statusResolver)
         {
+            _projectResolver = projectResolver;
+            _statusResolver = statusResolver;
             _context = context;
             _mapper = mapper;
         }
 
-        public async Task<KanbanBoardDto?> CreateAsync(KanbanBoardDto dto)
+        public async Task<KanbanBoardDto?> CreateAsync(KanbanBoardCreateDto dto)
         {
             if (await _context.KanbanBoards.AnyAsync(p => p.Title == dto.Title))
             {
                 return null;
             }
 
-            var board = _mapper.Map<KanbanBoard>(dto);
-            board.Id = Guid.NewGuid().ToString();
-
+            var board = new KanbanBoard() 
+            { 
+                Id = Guid.NewGuid().ToString(),
+                Title = dto.Title, 
+                Project = await _projectResolver.ResolveAsync(dto.ProjectId),
+                ProjectId = dto.ProjectId,
+                Columns = dto.ColumnIds.Select(colId => _statusResolver.ResolveAsync(colId).Result).ToList()
+            };
+            
             await _context.KanbanBoards.AddAsync(board);
             await _context.SaveChangesAsync();
 
@@ -67,15 +82,23 @@ namespace Tasker.Application.Repositories
 
         public async Task<KanbanBoardDto?> GetAsync(string id)
         {
-            var board = await _context.KanbanBoards.AsNoTracking().FirstOrDefaultAsync(p => p.Id == id);
+            var board = await GetEntity(id);
             
             return board is not null ? _mapper.Map<KanbanBoardDto>(board) : null;
         }
 
+        private async Task<KanbanBoard?> GetEntity(string id)
+            => await _context.KanbanBoards
+            .AsNoTracking()
+            .Include(t => t.Project)
+            .Include(t => t.Columns)
+            .AsNoTracking().FirstOrDefaultAsync(p => p.Id == id);
+
         public async Task<List<KanbanBoardDto>?> GetAllAsync()
         {
             var boards = new List<KanbanBoardDto>();
-            await _context.KanbanBoards.AsNoTracking().ForEachAsync(b => boards.Add(_mapper.Map<KanbanBoardDto>(b)));
+            await _context.KanbanBoards.AsNoTracking().Include(t => t.Project)
+            .Include(t => t.Columns).ForEachAsync(b => boards.Add(_mapper.Map<KanbanBoardDto>(b)));
 
             return boards.Any() ? boards : null;
         }

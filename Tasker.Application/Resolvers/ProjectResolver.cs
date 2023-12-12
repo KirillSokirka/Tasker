@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Tasker.Application.DTOs;
 using Tasker.Application.Resolvers.Interfaces;
 using Tasker.Domain.Entities.Application;
 using Tasker.Domain.Exceptions;
@@ -7,7 +6,7 @@ using Tasker.Infrastructure.Data.Application;
 
 namespace Tasker.Application.Resolvers;
 
-public class ProjectResolver : IResolver<Project, ProjectDto>
+public class ProjectResolver : IResolver<Project, string>
 {
     private readonly ApplicationContext _context;
 
@@ -16,7 +15,7 @@ public class ProjectResolver : IResolver<Project, ProjectDto>
         _context = context;
     }
 
-    public async Task<Project> ResolveAsync(ProjectDto dto)
-        => await _context.Projects.FirstOrDefaultAsync(p => p.Id == dto.Id)
-           ?? throw new InvalidEntityException($"Project with id {dto.Id} doesnt exists");
+    public async Task<Project> ResolveAsync(string id)
+        => await _context.Projects.FirstOrDefaultAsync(p => p.Id == id)
+           ?? throw new InvalidEntityException($"Project with id {id} doesnt exists");
 }
