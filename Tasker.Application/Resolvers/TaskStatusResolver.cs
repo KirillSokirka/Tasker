@@ -1,19 +1,12 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Tasker.Application.DTOs;
 using Tasker.Application.Resolvers.Interfaces;
-using Tasker.Domain.Entities.Application;
 using Tasker.Domain.Exceptions;
 using Tasker.Infrastructure.Data.Application;
 using TaskStatus = Tasker.Domain.Entities.Application.TaskStatus;
 
 namespace Tasker.Application.Resolvers
 {
-    public class TaskStatusResolver : IResolver<TaskStatus, TaskStatusDto>
+    public class TaskStatusResolver : IResolver<TaskStatus, string>
     {
         private readonly ApplicationContext _context;
 
@@ -22,8 +15,8 @@ namespace Tasker.Application.Resolvers
             _context = context;
         }
 
-        public async Task<TaskStatus> ResolveAsync(TaskStatusDto dto)
-            => await _context.TaskStatuses.FirstOrDefaultAsync(p => p.Id == dto.Id)
-               ?? throw new InvalidEntityException($"TaskStatus with id {dto.Id} doesnt exists");
+        public async Task<TaskStatus> ResolveAsync(string id)
+            => await _context.TaskStatuses.FirstOrDefaultAsync(p => p.Id == id)
+               ?? throw new InvalidEntityException($"TaskStatus with id {id} doesnt exists");
     }
 }

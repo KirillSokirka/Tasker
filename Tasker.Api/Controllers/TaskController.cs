@@ -1,8 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Tasker.Application.DTOs.Application;
 using Tasker.Application.DTOs.Application.Task;
 using Tasker.Application.Interfaces.Repositories;
-using Tasker.Application.Repositories;
 
 namespace Tasker.Controllers;
 
@@ -32,7 +30,7 @@ public class TaskController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> Post([FromBody] TaskDto dto)
+    public async Task<IActionResult> Post([FromBody] TaskCreateDto dto)
     {
         var createdDto = await _taskRepository.CreateAsync(dto);
 

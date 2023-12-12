@@ -17,19 +17,19 @@ namespace Tasker.Application.Repositories;
 public class TaskRepository : ITaskRepository
 {
     private readonly IResolver<TaskResolvedPropertiesDto, TaskUpdateDto> _taskResolver;
-    private readonly IResolver<Project, ProjectDto> _projectResolver;
-    private readonly IResolver<User, UserDto> _userResolver;
-    private readonly IResolver<Release, ReleaseDto> _releaseResolver;
-    private readonly IResolver<TaskStatus, TaskStatusDto> _statusResolver;
+    private readonly IResolver<Project, string> _projectResolver;
+    private readonly IResolver<User, string> _userResolver;
+    private readonly IResolver<Release, string> _releaseResolver;
+    private readonly IResolver<TaskStatus, string> _statusResolver;
     private readonly ApplicationContext _context;
     private readonly IMapper _mapper;
 
     public TaskRepository(ApplicationContext context, IMapper mapper, 
         IResolver<TaskResolvedPropertiesDto, TaskUpdateDto> taskResolver,
-        IResolver<User, UserDto> userResolver,
-        IResolver<Project, ProjectDto> projectResolver,
-        IResolver<Release, ReleaseDto> releaseResolver,
-        IResolver<TaskStatus, TaskStatusDto> statusResolver)
+        IResolver<User, string> userResolver,
+        IResolver<Project, string> projectResolver,
+        IResolver<Release, string> releaseResolver,
+        IResolver<TaskStatus, string> statusResolver)
     {
         _projectResolver = projectResolver;
         _userResolver = userResolver;
@@ -40,19 +40,17 @@ public class TaskRepository : ITaskRepository
         _mapper = mapper;
     }
 
-    public async Task<TaskDto?> CreateAsync(TaskDto dto)
+    public async Task<TaskDto?> CreateAsync(TaskCreateDto dto)
     {
         var task = _mapper.Map<Task>(dto);
 
         task.Id = Guid.NewGuid().ToString();
 
-        task.Creator = await _userResolver.ResolveAsync(dto.Creator);
-        task.Project = await _projectResolver.ResolveAsync(dto.Project);
-        task.Release = dto.Release is null ? null : await _releaseResolver.ResolveAsync(dto.Release);
-        task.Status = dto.Status is null ? null : await _statusResolver.ResolveAsync(dto.Status);
-        task.Assignee = dto.Assignee is null ? null : await _userResolver.ResolveAsync(dto.Assignee);
-
-        //_context.Releases.Attach(task.Release);
+        task.Creator = await _userResolver.ResolveAsync(dto.CreatorId);
+        task.Project = await _projectResolver.ResolveAsync(dto.ProjectId);
+        task.Release = dto.ReleaseId is null ? null : await _releaseResolver.ResolveAsync(dto.ReleaseId);
+        task.Status = dto.TaskStatusId is null ? null : await _statusResolver.ResolveAsync(dto.TaskStatusId);
+        task.Assignee = dto.AssigneeId is null ? null : await _userResolver.ResolveAsync(dto.AssigneeId);
 
         await _context.Tasks.AddAsync(task);
         await _context.SaveChangesAsync();
@@ -113,6 +111,11 @@ public class TaskRepository : ITaskRepository
 
     public async Task<List<TaskDto>> GetAllAsync() =>
         await _context.Tasks
+            .Include(t => t.Project)
+            .Include(t => t.Assignee)
+            .Include(t => t.Release)
+            .Include(t => t.Creator)
+            .Include(t => t.Status)
             .AsNoTracking()
             .Select(task => _mapper.Map<TaskDto>(task))
             .ToListAsync();
