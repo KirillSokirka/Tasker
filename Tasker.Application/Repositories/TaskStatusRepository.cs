@@ -1,8 +1,9 @@
 ﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
-using Tasker.Application.DTOs;
 using Tasker.Application.DTOs.Application;
+using Tasker.Application.DTOs.Application.Release;
 using Tasker.Application.DTOs.Application.Task;
+using Tasker.Application.DTOs.Application.TaskStatus;
 using Tasker.Application.Interfaces.Repositories;
 using Tasker.Domain.Exceptions;
 using Tasker.Infrastructure.Data.Application;
@@ -21,7 +22,7 @@ namespace Tasker.Application.Repositories
             _mapper = mapper;
         }
 
-        public async Task<TaskStatusDto?> CreateAsync(TaskStatusDto statusDto)
+        public async Task<TaskStatusDto?> CreateAsync(TaskStatusCreateDto statusDto)
         {
             if (await _context.TaskStatuses.AnyAsync(s => s.Name == statusDto.Name))
             {
@@ -29,7 +30,6 @@ namespace Tasker.Application.Repositories
             }
 
             var status = _mapper.Map<TaskStatus>(statusDto);
-            status.Id = Guid.NewGuid().ToString();
 
             await _context.TaskStatuses.AddAsync(status);
             await _context.SaveChangesAsync();
@@ -37,7 +37,7 @@ namespace Tasker.Application.Repositories
             return _mapper.Map<TaskStatusDto>(status);
         }
 
-        public async Task<TaskStatusDto?> UpdateAsync(TaskStatusDto statusDto)
+        public async Task<TaskStatusDto?> UpdateAsync(TaskStatusUpdateDto statusDto)
         {            
             var status = await _context.TaskStatuses.FindAsync(statusDto.Id);
             
@@ -46,9 +46,13 @@ namespace Tasker.Application.Repositories
                 return null;
             }
 
-            await ValidateModel(statusDto);
+            if (statusDto.KanbanBoardId is not null)
+            {
+                await ValidateModel(statusDto);
+            }
 
-            _mapper.Map(statusDto, status);
+            status.Name = statusDto.Name ?? status.Name;
+            status.KanbanBoardId = statusDto.KanbanBoardId ?? status.KanbanBoardId;
 
             await _context.SaveChangesAsync();
 
@@ -69,15 +73,8 @@ namespace Tasker.Application.Repositories
 
             return true;
         }
-
-        public async Task<TaskStatusDto?> GetAsync(string id)
-        {
-            var status = await _context.TaskStatuses.AsNoTracking().FirstOrDefaultAsync(s => s.Id == id);
-            
-            return status is not null ? _mapper.Map<TaskStatusDto>(status) : null;
-        }
         
-        private async Task ValidateModel(TaskStatusDto statusDto)
+        private async Task ValidateModel(TaskStatusUpdateDto statusDto)
         {
             if (!await _context.KanbanBoards.AnyAsync(b => b.Id == statusDto.KanbanBoardId))
             {
@@ -85,11 +82,37 @@ namespace Tasker.Application.Repositories
             }
         }
 
-        public async Task<List<TaskStatusDto>> GetAllAsync() =>
-        await _context.TaskStatuses
+        public async Task<TaskStatusDto?> GetAsync(string id)
+        {
+            var status = await _context.TaskStatuses.AsNoTracking().FirstOrDefaultAsync(s => s.Id == id);
+
+            TaskStatusDto? dto = null;
+            if (status is not null)
+            {
+                var tasks = await _context.Tasks.Include(t => t.Status).AsNoTracking().Where(t => t.TaskStatusId == status.Id).ToListAsync();
+
+
+                dto = _mapper.Map<TaskStatusDto>(status);
+                dto.Tasks = tasks.Select(t => new PreviewTaskDto() { Id = t.Id, Title = t.Title!, TaskStatusName = t.Status?.Name ?? string.Empty }).ToList();
+            }
+
+            return dto;
+        }
+
+        public async Task<List<TaskStatusDto>> GetAllAsync() {
+            var statuses = await _context.TaskStatuses
             .AsNoTracking()
             .Select(status => _mapper.Map<TaskStatusDto>(status))
             .ToListAsync();
+
+            foreach (var status in statuses)
+            {
+                var tasks = await _context.Tasks.Include(t => t.Status).AsNoTracking().Where(t => t.TaskStatusId == status.Id).ToListAsync();
+                status.Tasks = tasks.Select(t => new PreviewTaskDto() { Id = t.Id, Title = t.Title!, TaskStatusName = t.Status?.Name ?? string.Empty }).ToList();
+            }
+            return statuses;
+        }
+        
     }
 
 }

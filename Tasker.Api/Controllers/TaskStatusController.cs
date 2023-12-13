@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Tasker.Application.DTOs;
+using Tasker.Application.DTOs.Application.TaskStatus;
 using Tasker.Application.Interfaces.Repositories;
-using Tasker.Application.Repositories;
 
 namespace Tasker.Controllers
 {
@@ -31,7 +30,7 @@ namespace Tasker.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Post([FromBody] TaskStatusDto dto)
+        public async Task<IActionResult> Post([FromBody] TaskStatusCreateDto dto)
         {
             var createdDto = await _statusRepository.CreateAsync(dto);
 
@@ -41,7 +40,7 @@ namespace Tasker.Controllers
         }
 
         [HttpPut]
-        public async Task<IActionResult> Update([FromBody] TaskStatusDto dto)
+        public async Task<IActionResult> Update([FromBody] TaskStatusUpdateDto dto)
         {
             var updatedDto = await _statusRepository.UpdateAsync(dto);
 

@@ -1,4 +1,6 @@
-﻿namespace Tasker.Application.DTOs.Application.Release
+﻿using Tasker.Application.DTOs.Application.Task;
+
+namespace Tasker.Application.DTOs.Application.Release
 {
     public class ReleaseDto
     {
@@ -11,6 +13,6 @@
 
         public string? ProjectId { get; set; }
 
-        public List<ReleaseTaskDto> Tasks { get; set; }
+        public List<PreviewTaskDto> Tasks { get; set; }
     }
 }

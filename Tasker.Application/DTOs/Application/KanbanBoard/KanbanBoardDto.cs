@@ -1,4 +1,5 @@
 ﻿using Tasker.Application.DTOs.Application.Project;
+using Tasker.Application.DTOs.Application.TaskStatus;
 
 namespace Tasker.Application.DTOs.Application.KanbanBoard;
 

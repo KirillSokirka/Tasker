@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Tasker.Application.DTOs.Application;
 using Tasker.Application.DTOs.Application.Release;
+using Tasker.Application.DTOs.Application.Task;
 using Tasker.Application.Interfaces.Repositories;
 using Tasker.Domain.Entities.Application;
 using Tasker.Infrastructure.Data.Application;
@@ -77,7 +78,7 @@ namespace Tasker.Application.Repositories
 
 
                 dto = _mapper.Map<ReleaseDto>(release);
-                dto.Tasks = tasks.Select(t => new ReleaseTaskDto() { Id = t.Id, Title = t.Title, TaskStatusName = t.Status.Name }).ToList();
+                dto.Tasks = tasks.Select(t => new PreviewTaskDto() {Id = t.Id, Title = t.Title!, TaskStatusName = t.Status?.Name ?? string.Empty}).ToList();
             }
 
             return dto;
@@ -92,11 +93,8 @@ namespace Tasker.Application.Repositories
             foreach(var release in releases)
             {
                     var tasks = await _context.Tasks.Include(t => t.Status).AsNoTracking().Where(t => t.ReleaseId == release.Id).ToListAsync();
-                    release.Tasks = tasks.Select(t => new ReleaseTaskDto() { Id = t.Id, Title = t.Title, TaskStatusName = t.Status.Name }).ToList();
+                    release.Tasks = tasks.Select(t => new PreviewTaskDto() { Id = t.Id, Title = t.Title!, TaskStatusName = t.Status?.Name ?? string.Empty}).ToList();
             }
-
-                
-
             return releases;
         }
         

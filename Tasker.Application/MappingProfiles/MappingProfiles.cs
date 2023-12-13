@@ -1,10 +1,10 @@
 ﻿using AutoMapper;
-using Tasker.Application.DTOs;
 using Tasker.Application.DTOs.Application;
 using Tasker.Application.DTOs.Application.KanbanBoard;
 using Tasker.Application.DTOs.Application.Project;
 using Tasker.Application.DTOs.Application.Release;
 using Tasker.Application.DTOs.Application.Task;
+using Tasker.Application.DTOs.Application.TaskStatus;
 using Tasker.Domain.Entities.Application;
 using Task = Tasker.Domain.Entities.Application.Task;
 using TaskStatus = Tasker.Domain.Entities.Application.TaskStatus;
@@ -27,6 +27,7 @@ public class MappingProfile : Profile
         CreateMap<Release, ReleaseDto>().ReverseMap();
         CreateMap<Release, ReleaseCreateDto>().ReverseMap();
         CreateMap<TaskStatus, TaskStatusDto>().ReverseMap();
+        CreateMap<TaskStatus, TaskStatusCreateDto>().ReverseMap();
         CreateMap<User, UserDto>().ReverseMap();
         CreateMap<Task, TaskDto>()
             .ForMember(t => t.ProjectId, dto => dto.MapFrom(t => t.Project.Id))
