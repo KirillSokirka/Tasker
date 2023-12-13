@@ -1,13 +1,13 @@
-﻿using Tasker.Application.DTOs;
+﻿using Tasker.Application.DTOs.Application.Project;
 
 namespace Tasker.Application.Interfaces.Repositories
 {
     public interface IProjectRepository
     {
-        Task<ProjectDto?> CreateAsync(ProjectDto projectDto);
+        Task<ProjectDto?> CreateAsync(ProjectCreateDto projectDto);
         Task<ProjectDto?> UpdateAsync(ProjectDto projectDto);
         Task<bool> DeleteAsync(string id);
-        Task<ProjectDto?> GetAsync(string id);
-        Task<List<ProjectDto>> GetAllAsync();
+        Task<ProjectResultDto?> GetAsync(string id);
+        Task<List<ProjectResultDto>> GetAllAsync();
     }
 }
