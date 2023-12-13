@@ -41,17 +41,18 @@ public class TaskRepository : ITaskRepository
         _mapper = mapper;
     }
 
-    public async Task<TaskDto?> CreateAsync(TaskCreateDto dto)
+    public async Task<TaskDto> CreateAsync(TaskCreateDto dto)
     {
-        var task = _mapper.Map<Task>(dto);
-
-        task.Id = Guid.NewGuid().ToString();
-
-        task.Creator = await _userResolver.ResolveAsync(dto.CreatorId);
-        task.Project = await _projectResolver.ResolveAsync(dto.ProjectId);
-        task.Release = dto.ReleaseId is null ? null : await _releaseResolver.ResolveAsync(dto.ReleaseId);
-        task.Status = dto.TaskStatusId is null ? null : await _statusResolver.ResolveAsync(dto.TaskStatusId);
-        task.Assignee = dto.AssigneeId is null ? null : await _userResolver.ResolveAsync(dto.AssigneeId);
+        var task = new Task()
+        {
+            Title = dto.Title,
+            Description = dto.Description,
+            Creator = await _userResolver.ResolveAsync(dto.CreatorId),
+            Project = await _projectResolver.ResolveAsync(dto.ProjectId),
+            Release = dto.ReleaseId is null ? null : await _releaseResolver.ResolveAsync(dto.ReleaseId),
+            Status = dto.TaskStatusId is null ? null : await _statusResolver.ResolveAsync(dto.TaskStatusId),
+            Assignee = dto.AssigneeId is null ? null : await _userResolver.ResolveAsync(dto.AssigneeId)
+        };
 
         await _context.Tasks.AddAsync(task);
         await _context.SaveChangesAsync();

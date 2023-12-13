@@ -41,7 +41,7 @@ namespace Tasker.Controllers
         }
 
         [HttpPut]
-        public async Task<IActionResult> Update([FromBody] KanbanBoardDto dto)
+        public async Task<IActionResult> Update([FromBody] KanbanBoardUpdateDto dto)
         {
             var updatedDto = await _boardRepository.UpdateAsync(dto);
 

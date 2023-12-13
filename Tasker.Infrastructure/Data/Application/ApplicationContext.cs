@@ -18,6 +18,10 @@ public class ApplicationContext : DbContext
     public DbSet<TaskStatus> TaskStatuses { get; set; }
     public DbSet<User> User { get; set; }
 
+    //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) => optionsBuilder
+    //        .UseLazyLoadingProxies(false)
+    //        .UseSqlServer(...);
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);

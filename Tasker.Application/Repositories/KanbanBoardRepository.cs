@@ -12,16 +12,13 @@ namespace Tasker.Application.Repositories
     public class KanbanBoardRepository : IKanbanBoardRepository
     {
         private readonly IResolver<Project, string> _projectResolver;
-        private readonly IResolver<TaskStatus, string> _statusResolver;
         private readonly ApplicationContext _context;
         private readonly IMapper _mapper;
 
         public KanbanBoardRepository(ApplicationContext context, IMapper mapper,
-            IResolver<Project, string> projectResolver,
-            IResolver<TaskStatus, string> statusResolver)
+            IResolver<Project, string> projectResolver)
         {
             _projectResolver = projectResolver;
-            _statusResolver = statusResolver;
             _context = context;
             _mapper = mapper;
         }
@@ -38,8 +35,7 @@ namespace Tasker.Application.Repositories
                 Id = Guid.NewGuid().ToString(),
                 Title = dto.Title, 
                 Project = await _projectResolver.ResolveAsync(dto.ProjectId),
-                ProjectId = dto.ProjectId,
-                Columns = dto.ColumnIds.Select(colId => _statusResolver.ResolveAsync(colId).Result).ToList()
+                ProjectId = dto.ProjectId
             };
             
             await _context.KanbanBoards.AddAsync(board);
@@ -48,7 +44,7 @@ namespace Tasker.Application.Repositories
             return _mapper.Map<KanbanBoardDto>(board);
         }
 
-        public async Task<KanbanBoardDto?> UpdateAsync(KanbanBoardDto dto)
+        public async Task<KanbanBoardDto?> UpdateAsync(KanbanBoardUpdateDto dto)
         {  
             var board = await _context.KanbanBoards.FindAsync(dto.Id);
             

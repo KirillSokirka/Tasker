@@ -20,17 +20,17 @@ public class MappingProfile : Profile
             .ForMember(t => t.TaskIds, src => src.MapFrom(t => t.Tasks.Select(val => val.Id)))
             .ForMember(t => t.ReleaseIds, src => src.MapFrom(t => t.Releases.Select(val => val.Id)));
         CreateMap<KanbanBoard, KanbanBoardDto>().ReverseMap();
+        CreateMap<KanbanBoardUpdateDto, KanbanBoard>();
         CreateMap<KanbanBoard, KanbanBoardResultDto>()
             .ForMember(t => t.ColumnIds, src => src.MapFrom(t => t.Columns.Select(val => val.Id)));
         CreateMap<Release, ReleaseDto>().ReverseMap();
         CreateMap<TaskStatus, TaskStatusDto>().ReverseMap();
         CreateMap<User, UserDto>().ReverseMap();
-        CreateMap<Task, TaskDto>();
-        CreateMap<TaskDto, Task>()
+        CreateMap<Task, TaskDto>()
             .ForMember(t => t.ProjectId, dto => dto.MapFrom(t => t.Project.Id))
-            .ForMember(t => t.CreatorId, dto => dto.MapFrom(t => t.Creator.Id))
+            .ForMember(t => t.Creator, dto => dto.MapFrom(t => t.Creator))
             .ForMember(t => t.TaskStatusId, dto => dto.MapFrom(t => t.Status != null ? t.Status.Id : null))
             .ForMember(t => t.ReleaseId, dto => dto.MapFrom(t => t.Release != null ? t.Release.Id : null))
-            .ForMember(t => t.AssigneeId, dto => dto.MapFrom(t => t.Assignee != null ? t.Assignee.Id : null));
+            .ForMember(t => t.Assignee, dto => dto.MapFrom(t => t.Assignee != null ? t.Assignee : null));
     }
 }
