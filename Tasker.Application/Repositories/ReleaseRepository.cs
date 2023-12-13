@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
-using Tasker.Application.DTOs;
 using Tasker.Application.DTOs.Application;
+using Tasker.Application.DTOs.Application.Release;
 using Tasker.Application.Interfaces.Repositories;
 using Tasker.Domain.Entities.Application;
 using Tasker.Infrastructure.Data.Application;
@@ -19,7 +19,7 @@ namespace Tasker.Application.Repositories
             _mapper = mapper;
         }
 
-        public async Task<ReleaseDto?> CreateAsync(ReleaseDto releaseDto)
+        public async Task<ReleaseDto?> CreateAsync(ReleaseCreateDto releaseDto)
         {
             if (await _context.Releases.AnyAsync(r => r.Title == releaseDto.Title))
             {
@@ -27,8 +27,6 @@ namespace Tasker.Application.Repositories
             }
 
             var release = _mapper.Map<Release>(releaseDto);
-            release.Id = Guid.NewGuid().ToString();
-            release.CreationDate = DateTime.Now;
 
             await _context.Releases.AddAsync(release);
             await _context.SaveChangesAsync();
@@ -36,7 +34,7 @@ namespace Tasker.Application.Repositories
             return _mapper.Map<ReleaseDto>(release);
         }
 
-        public async Task<ReleaseDto?> UpdateAsync(ReleaseDto releaseDto)
+        public async Task<ReleaseDto?> UpdateAsync(ReleaseUpdateDto releaseDto)
         {
             var release = await _context.Releases.FindAsync(releaseDto.Id);
             
@@ -45,7 +43,9 @@ namespace Tasker.Application.Repositories
                 return null;
             }
 
-            _mapper.Map(releaseDto, release);
+            release.Title = releaseDto.Title ?? release.Title;
+            release.IsReleased = releaseDto.IsReleased ?? release.IsReleased;
+            release.EndDate = releaseDto.EndDate ?? release.EndDate;
 
             await _context.SaveChangesAsync();
 
@@ -70,15 +70,36 @@ namespace Tasker.Application.Repositories
         public async Task<ReleaseDto?> GetAsync(string id)
         {
             var release = await _context.Releases.AsNoTracking().FirstOrDefaultAsync(r => r.Id == id);
-            
-            return release is not null ? _mapper.Map<ReleaseDto>(release) : null;
+            ReleaseDto? dto = null;
+            if (release is not null)
+            {
+                var tasks = await _context.Tasks.Include(t => t.Status).AsNoTracking().Where(t => t.ReleaseId == release.Id).ToListAsync();
+
+
+                dto = _mapper.Map<ReleaseDto>(release);
+                dto.Tasks = tasks.Select(t => new ReleaseTaskDto() { Id = t.Id, Title = t.Title, TaskStatusName = t.Status.Name }).ToList();
+            }
+
+            return dto;
         }
 
-        public async Task<List<ReleaseDto>> GetAllAsync() =>
-        await _context.Releases
+        public async Task<List<ReleaseDto>> GetAllAsync() {
+            var releases = await _context.Releases
             .AsNoTracking()
             .Select(release => _mapper.Map<ReleaseDto>(release))
             .ToListAsync();
+
+            foreach(var release in releases)
+            {
+                    var tasks = await _context.Tasks.Include(t => t.Status).AsNoTracking().Where(t => t.ReleaseId == release.Id).ToListAsync();
+                    release.Tasks = tasks.Select(t => new ReleaseTaskDto() { Id = t.Id, Title = t.Title, TaskStatusName = t.Status.Name }).ToList();
+            }
+
+                
+
+            return releases;
+        }
+        
     }
 
 }

@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Tasker.Application.DTOs;
+using Tasker.Application.DTOs.Application.Release;
 using Tasker.Application.Interfaces.Repositories;
 using Tasker.Application.Repositories;
 
@@ -31,7 +31,7 @@ namespace Tasker.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Post([FromBody] ReleaseDto dto)
+        public async Task<IActionResult> Post([FromBody] ReleaseCreateDto dto)
         {
             var createdDto = await _releaseRepository.CreateAsync(dto);
 
@@ -41,9 +41,9 @@ namespace Tasker.Controllers
         }
 
         [HttpPut]
-        public async Task<IActionResult> Update([FromBody] ReleaseDto dto)
+        public async Task<IActionResult> Update([FromBody] ReleaseUpdateDto dto)
         {
-            var updatedDto = await _releaseRepository.UpdateAsync( dto);
+            var updatedDto = await _releaseRepository.UpdateAsync(dto);
 
             return updatedDto is null
                 ? NotFound(new { error = $"Project with id {dto.Id} does not exist" })

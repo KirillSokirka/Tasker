@@ -3,6 +3,7 @@ using Tasker.Application.DTOs;
 using Tasker.Application.DTOs.Application;
 using Tasker.Application.DTOs.Application.KanbanBoard;
 using Tasker.Application.DTOs.Application.Project;
+using Tasker.Application.DTOs.Application.Release;
 using Tasker.Application.DTOs.Application.Task;
 using Tasker.Domain.Entities.Application;
 using Task = Tasker.Domain.Entities.Application.Task;
@@ -24,6 +25,7 @@ public class MappingProfile : Profile
         CreateMap<KanbanBoard, KanbanBoardResultDto>()
             .ForMember(t => t.ColumnIds, src => src.MapFrom(t => t.Columns.Select(val => val.Id)));
         CreateMap<Release, ReleaseDto>().ReverseMap();
+        CreateMap<Release, ReleaseCreateDto>().ReverseMap();
         CreateMap<TaskStatus, TaskStatusDto>().ReverseMap();
         CreateMap<User, UserDto>().ReverseMap();
         CreateMap<Task, TaskDto>()
