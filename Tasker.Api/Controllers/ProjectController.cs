@@ -40,7 +40,7 @@ namespace Tasker.Controllers
         }
 
         [HttpPut]
-        public async Task<IActionResult> Update([FromBody] ProjectDto dto)
+        public async Task<IActionResult> Update([FromBody] ProjectUpdateDto dto)
         {
             var updatedDto = await _projectRepository.UpdateAsync(dto);
 

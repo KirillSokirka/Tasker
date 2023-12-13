@@ -1,5 +1,4 @@
-﻿using Tasker.Application.DTOs.Application.Project;
-using Tasker.Application.DTOs.Application.Task;
+﻿using Tasker.Application.DTOs.Application.Task;
 using Tasker.Application.Resolvers.DTOs;
 using Tasker.Application.Resolvers.Interfaces;
 using Tasker.Domain.Entities.Application;
@@ -10,17 +9,14 @@ namespace Tasker.Application.Resolvers;
 public class TaskUpdateResolver : IResolver<TaskResolvedPropertiesDto, TaskUpdateDto>
 {
     private readonly IResolver<User, string> _userResolver;
-    private readonly IResolver<Project, string> _projectResolver;
     private readonly IResolver<Release, string> _releaseResolver;
     private readonly IResolver<TaskStatus, string> _statusResolver;
 
     public TaskUpdateResolver(IResolver<User, string> userResolver,
-        IResolver<Project, string> projectResolver,
         IResolver<Release, string> releaseResolver,
         IResolver<TaskStatus, string> statusResolver)
     {
         _userResolver = userResolver;
-        _projectResolver = projectResolver;
         _releaseResolver = releaseResolver;
         _statusResolver = statusResolver;
     }

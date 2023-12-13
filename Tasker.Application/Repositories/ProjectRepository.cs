@@ -39,11 +39,7 @@ namespace Tasker.Application.Repositories
             var project = new Project 
             { 
                 Id = Guid.NewGuid().ToString(),
-                Title = projectDto.Title,
-                KanbanBoards = projectDto.KanbanBoardIds.Select(id => _boardResolver.ResolveAsync(id).Result).ToList(),
-                Tasks = projectDto.TaskIds.Select(id => _taskResolver.ResolveAsync(id).Result).ToList(),
-                Releases = projectDto.ReleaseIds.Select(id => _releaseResolver.ResolveAsync(id).Result).ToList()
-
+                Title = projectDto.Title
             };
 
             await _context.Projects.AddAsync(project);
@@ -52,7 +48,7 @@ namespace Tasker.Application.Repositories
             return _mapper.Map<ProjectDto>(project);
         }
 
-        public async Task<ProjectDto?> UpdateAsync(ProjectDto projectDto)
+        public async Task<ProjectDto?> UpdateAsync(ProjectUpdateDto projectDto)
         {            
             var project = await _context.Projects.FindAsync(projectDto.Id);
             
@@ -61,7 +57,7 @@ namespace Tasker.Application.Repositories
                 return null;
             }
 
-            _mapper.Map(projectDto, project);
+            project.Title = projectDto.Title;
 
             await _context.SaveChangesAsync();
 
