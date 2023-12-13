@@ -1,4 +1,6 @@
-﻿namespace Tasker.Application.DTOs.Application.KanbanBoard;
+﻿using Tasker.Application.DTOs.Application.Project;
+
+namespace Tasker.Application.DTOs.Application.KanbanBoard;
 
 public class KanbanBoardDto
 {

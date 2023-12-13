@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Tasker.Application.DTOs;
 using Tasker.Application.DTOs.Application;
+using Tasker.Application.DTOs.Application.Project;
 using Tasker.Application.DTOs.Application.Task;
 using Tasker.Application.EntitiesExtension;
 using Tasker.Application.Interfaces.Repositories;
@@ -25,7 +26,7 @@ public class TaskRepository : ITaskRepository
     private readonly IMapper _mapper;
 
     public TaskRepository(ApplicationContext context, IMapper mapper, 
-        IResolver<TaskResolvedPropertiesDto, TaskUpdateDto> taskResolver,
+        IResolver<TaskResolvedPropertiesDto, TaskUpdateDto> taskUpdateResolver,
         IResolver<User, string> userResolver,
         IResolver<Project, string> projectResolver,
         IResolver<Release, string> releaseResolver,
@@ -33,7 +34,7 @@ public class TaskRepository : ITaskRepository
     {
         _projectResolver = projectResolver;
         _userResolver = userResolver;
-        _taskResolver = taskResolver;
+        _taskResolver = taskUpdateResolver;
         _releaseResolver = releaseResolver;
         _statusResolver = statusResolver;
         _context = context;

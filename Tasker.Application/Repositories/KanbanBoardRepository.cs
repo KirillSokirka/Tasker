@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
-using Tasker.Application.DTOs;
 using Tasker.Application.DTOs.Application.KanbanBoard;
 using Tasker.Application.Interfaces.Repositories;
 using Tasker.Application.Resolvers.Interfaces;
@@ -80,11 +79,11 @@ namespace Tasker.Application.Repositories
             return true;
         }
 
-        public async Task<KanbanBoardDto?> GetAsync(string id)
+        public async Task<KanbanBoardResultDto?> GetAsync(string id)
         {
             var board = await GetEntity(id);
             
-            return board is not null ? _mapper.Map<KanbanBoardDto>(board) : null;
+            return board is not null ? _mapper.Map<KanbanBoardResultDto>(board) : null;
         }
 
         private async Task<KanbanBoard?> GetEntity(string id)
@@ -94,11 +93,11 @@ namespace Tasker.Application.Repositories
             .Include(t => t.Columns)
             .AsNoTracking().FirstOrDefaultAsync(p => p.Id == id);
 
-        public async Task<List<KanbanBoardDto>?> GetAllAsync()
+        public async Task<List<KanbanBoardResultDto>?> GetAllAsync()
         {
-            var boards = new List<KanbanBoardDto>();
+            var boards = new List<KanbanBoardResultDto>();
             await _context.KanbanBoards.AsNoTracking().Include(t => t.Project)
-            .Include(t => t.Columns).ForEachAsync(b => boards.Add(_mapper.Map<KanbanBoardDto>(b)));
+            .Include(t => t.Columns).ForEachAsync(b => boards.Add(_mapper.Map<KanbanBoardResultDto>(b)));
 
             return boards.Any() ? boards : null;
         }

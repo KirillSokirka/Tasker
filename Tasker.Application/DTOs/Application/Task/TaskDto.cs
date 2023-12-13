@@ -1,4 +1,5 @@
-﻿using Tasker.Domain.Enums;
+﻿using Tasker.Application.DTOs.Application.Project;
+using Tasker.Domain.Enums;
 
 namespace Tasker.Application.DTOs.Application.Task;
 
