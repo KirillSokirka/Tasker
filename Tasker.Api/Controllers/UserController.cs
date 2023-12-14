@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Tasker.Application.DTOs.Application.User;
 using Tasker.Application.Interfaces.Repositories;
 
 namespace Tasker.Controllers;
@@ -23,11 +24,21 @@ public class UserController : ControllerBase
             ? NotFound()
             : Ok(dto);
     }
-
+    
     [HttpGet]
     public async Task<IActionResult> GetAll()
         => Ok(await _userRepository.GetAllAsync());
 
+    [HttpPut]
+    public async Task<IActionResult> Update([FromBody] UserUpdateDto dto)
+    {
+        var updatedDto = await _userRepository.UpdateAsync(dto);
+        
+        return updatedDto is null
+            ? NotFound()
+            : Ok(updatedDto);
+    } 
+    
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete([FromRoute] string id)
     {

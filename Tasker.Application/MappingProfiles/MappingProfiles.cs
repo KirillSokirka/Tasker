@@ -5,6 +5,7 @@ using Tasker.Application.DTOs.Application.Project;
 using Tasker.Application.DTOs.Application.Release;
 using Tasker.Application.DTOs.Application.Task;
 using Tasker.Application.DTOs.Application.TaskStatus;
+using Tasker.Application.DTOs.Application.User;
 using Tasker.Domain.Entities.Application;
 using Task = Tasker.Domain.Entities.Application.Task;
 using TaskStatus = Tasker.Domain.Entities.Application.TaskStatus;

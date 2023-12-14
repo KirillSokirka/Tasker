@@ -1,4 +1,4 @@
-﻿namespace Tasker.Application.DTOs.Application;
+﻿namespace Tasker.Application.DTOs.Application.User;
 
 public class UserDto
 {

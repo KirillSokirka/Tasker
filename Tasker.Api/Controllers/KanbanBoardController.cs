@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Tasker.Application.DTOs;
 using Tasker.Application.DTOs.Application.KanbanBoard;
 using Tasker.Application.Interfaces.Repositories;
 

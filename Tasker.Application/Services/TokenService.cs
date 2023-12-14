@@ -16,17 +16,20 @@ namespace Tasker.Application.Services;
 public class TokenService : ITokenService
 {
     private readonly IFindUserByNameQuery _findUserByNameQuery;
+    private readonly IGetUserRolesQuery _getUserRolesQuery;
     private readonly IUpdateUserCommand _updateUserCommand;
     private readonly IFindByIdQuery _findByIdQuery;
     private readonly IConfiguration _configuration;
-
+    
     public TokenService(IConfiguration configuration, IFindUserByNameQuery findUserByNameQuery,
-        IUpdateUserCommand updateUserCommand, IFindByIdQuery byIdQuery)
+        IUpdateUserCommand updateUserCommand, IFindByIdQuery byIdQuery, 
+        IGetUserRolesQuery getUserRolesQuery)
     {
         _configuration = configuration;
         _findUserByNameQuery = findUserByNameQuery;
         _updateUserCommand = updateUserCommand;
         _findByIdQuery = byIdQuery;
+        _getUserRolesQuery = getUserRolesQuery;
     }
 
     public async Task<TokenModel> GenerateTokensPairAsync(ApplicationUser user)
@@ -37,14 +40,11 @@ public class TokenService : ITokenService
 
         var tokenHandler = new JwtSecurityTokenHandler();
 
+        var claims = await GenerateUserClaims(user);
+        
         var descriptor = new SecurityTokenDescriptor
         {
-            Subject = new ClaimsIdentity(new[]
-            {
-                new Claim(JwtRegisteredClaimNames.Sub, user.Email!),
-                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                new Claim(ClaimTypes.NameIdentifier, user.Id)
-            }),
+            Subject = new ClaimsIdentity(claims),
             Expires = DateTime.UtcNow.AddHours(1),
             SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(secretKey),
                 SecurityAlgorithms.HmacSha256Signature),
@@ -93,6 +93,22 @@ public class TokenService : ITokenService
     }
 
     #region Private Methods
+
+    private async Task<List<Claim>> GenerateUserClaims(ApplicationUser user)
+    {
+        var claims = new List<Claim>
+        {
+            new(JwtRegisteredClaimNames.Sub, user.Email!),
+            new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+            new(ClaimTypes.NameIdentifier, user.Id)
+        };
+        
+        var roles = await _getUserRolesQuery.ExecuteAsync(user);
+
+        claims.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role)));
+
+        return claims;
+    }
     
     private static string GenerateRefreshToken()
     {
@@ -119,6 +135,7 @@ public class TokenService : ITokenService
         };
 
         var tokenHandler = new JwtSecurityTokenHandler();
+        
         var principal = tokenHandler.ValidateToken(token, tokenValidationParameters, out var securityToken);
 
         var jwtSecurityToken = securityToken as JwtSecurityToken;
@@ -129,7 +146,7 @@ public class TokenService : ITokenService
 
         return principal;
     }
-
+    
     private async Task<bool> SaveRefreshTokenAsync(string userId, string refreshToken)
     {
         var user = await _findByIdQuery.ExecuteAsync(userId);

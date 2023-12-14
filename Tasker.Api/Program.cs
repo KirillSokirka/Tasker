@@ -28,6 +28,7 @@ using TaskStatus = Tasker.Domain.Entities.Application.TaskStatus;
 using Task = Tasker.Domain.Entities.Application.Task;
 using Tasker.Application.Resolver;
 using Tasker.Application.DTOs.Application.Project;
+using Tasker.Application.DTOs.Application.User;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -55,12 +56,16 @@ builder.Services.AddTransient<IFindByIdQuery, FindUserByIdQuery>();
 builder.Services.AddTransient<IUpdateUserCommand, UpdateUserCommand>();
 
 builder.Services.AddScoped<IResolver<User, string>, UserResolver>();
+builder.Services.AddScoped<IResolver<UserResolvedPropertiesDto, UserUpdateDto>, UserUpdateResolver>();
+
 builder.Services.AddScoped<IResolver<Project, string>, ProjectResolver>();
 builder.Services.AddScoped<IResolver<Release, string>, ReleaseResolver>();
 builder.Services.AddScoped<IResolver<KanbanBoard, string>, KanbanBoardResolver>();
 builder.Services.AddScoped<IResolver<TaskStatus, string>, TaskStatusResolver>();
-builder.Services.AddScoped<IResolver<TaskResolvedPropertiesDto, TaskUpdateDto>, TaskUpdateResolver>();
+
 builder.Services.AddScoped<IResolver<Task, string>, TaskResolver>();
+builder.Services.AddScoped<IResolver<TaskResolvedPropertiesDto, TaskUpdateDto>, TaskUpdateResolver>();
+
 
 builder.Services.AddAutoMapper(typeof(MappingProfile));
 

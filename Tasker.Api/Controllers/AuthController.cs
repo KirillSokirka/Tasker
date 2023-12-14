@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Tasker.Application.DTOs;
+using Tasker.Application.DTOs.Auth;
 using Tasker.Application.Interfaces;
 
 namespace Tasker.Controllers;
@@ -47,6 +49,30 @@ public class AuthController : ControllerBase
         }
 
         var operationResult = await _userAuthService.LoginUserAsync(model);
+
+        if (operationResult.IsSuccess)
+        {
+            return Ok(new { operationResult.Token });
+        }
+
+        foreach (var error in operationResult.Errors)
+        {
+            ModelState.AddModelError("", error);
+        }
+
+        return BadRequest(ModelState);
+    }
+
+    [Authorize]
+    [HttpPost("update-password")]
+    public async Task<IActionResult> UpdatePassword([FromBody] PasswordUpdateModel model)
+    {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+
+        var operationResult = await _userAuthService.UpdatePasswordAsync(model);
 
         if (operationResult.IsSuccess)
         {

@@ -1,8 +1,10 @@
 ﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
-using Tasker.Application.DTOs;
-using Tasker.Application.DTOs.Application;
+using Tasker.Application.DTOs.Application.User;
+using Tasker.Application.EntitiesExtension;
 using Tasker.Application.Interfaces.Repositories;
+using Tasker.Application.Resolvers.DTOs;
+using Tasker.Application.Resolvers.Interfaces;
 using Tasker.Domain.Entities.Application;
 using Tasker.Infrastructure.Data.Application;
 
@@ -10,11 +12,14 @@ namespace Tasker.Application.Repositories;
 
 public class UserRepository : IUserRepository
 {
+    private readonly IResolver<UserResolvedPropertiesDto, UserUpdateDto> _resolver;
     private readonly ApplicationContext _context;
     private readonly IMapper _mapper;
 
-    public UserRepository(ApplicationContext context, IMapper mapper)
+    public UserRepository(ApplicationContext context, IMapper mapper,
+        IResolver<UserResolvedPropertiesDto, UserUpdateDto> resolver)
     {
+        _resolver = resolver;
         _context = context;
         _mapper = mapper;
     }
@@ -31,7 +36,7 @@ public class UserRepository : IUserRepository
         return _mapper.Map<UserDto>(user);
     }
 
-    public async Task<UserDto?> UpdateAsync(UserDto dto)
+    public async Task<UserDto?> UpdateAsync(UserUpdateDto dto)
     {
         var user = await _context.User.FindAsync(dto.Id);
 
@@ -40,8 +45,10 @@ public class UserRepository : IUserRepository
             return null;
         }
 
-        _mapper.Map(dto, user);
+        var resolvedProperties = await _resolver.ResolveAsync(dto);
 
+        user.Update(dto, resolvedProperties);
+        
         await _context.SaveChangesAsync();
 
         return _mapper.Map<UserDto>(user);
