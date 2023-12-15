@@ -1,4 +1,6 @@
-﻿namespace Tasker.Application.DTOs;
+﻿using Tasker.Application.DTOs;
+
+namespace Tasker.Domain.Models.Identity;
 
 public class RefreshTokenModel : TokenModel
 {

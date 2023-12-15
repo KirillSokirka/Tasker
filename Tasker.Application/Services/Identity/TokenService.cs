@@ -10,6 +10,7 @@ using Tasker.Application.Interfaces;
 using Tasker.Application.Interfaces.Commands;
 using Tasker.Application.Interfaces.Queries;
 using Tasker.Domain.Entities.Identity;
+using Tasker.Domain.Models.Identity;
 
 namespace Tasker.Application.Services;
 

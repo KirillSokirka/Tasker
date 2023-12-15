@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Tasker.Application.DTOs.Application.TaskStatus;
-using Tasker.Application.Interfaces.Repositories;
 
 namespace Tasker.Controllers
 {

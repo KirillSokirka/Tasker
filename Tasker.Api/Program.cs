@@ -4,16 +4,12 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Tasker.Application.Commands;
-using Tasker.Application.DTOs;
-using Tasker.Application.DTOs.Application;
 using Tasker.Application.DTOs.Application.Task;
 using Tasker.Application.Interfaces;
 using Tasker.Application.Interfaces.Commands;
 using Tasker.Application.Interfaces.Queries;
-using Tasker.Application.Interfaces.Repositories;
 using Tasker.Application.MappingProfiles;
 using Tasker.Application.Queries;
-using Tasker.Application.Repositories;
 using Tasker.Application.Resolvers;
 using Tasker.Application.Resolvers.DTOs;
 using Tasker.Application.Resolvers.Interfaces;
@@ -27,8 +23,6 @@ using Tasker.Middleware;
 using TaskStatus = Tasker.Domain.Entities.Application.TaskStatus;
 using Task = Tasker.Domain.Entities.Application.Task;
 using Tasker.Application.Resolver;
-using Tasker.Application.DTOs.Application.Project;
-using Tasker.Application.DTOs.Application.User;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -42,21 +36,15 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
     .AddEntityFrameworkStores<IdentityContext>()
     .AddDefaultTokenProviders();
 
-builder.Services.AddTransient<IProjectRepository, ProjectRepository>();
-builder.Services.AddTransient<IKanbanBoardRepository, KanbanBoardRepository>();
-builder.Services.AddTransient<IReleaseRepository, ReleaseRepository>();
-builder.Services.AddTransient<ITaskStatusRepository, TaskStatusRepository>();
-builder.Services.AddTransient<ITaskRepository, TaskRepository>();
-builder.Services.AddTransient<IUserRepository, UserRepository>();
-
 builder.Services.AddTransient<IUserAuthService, UserAuthService>();
 builder.Services.AddTransient<ITokenService, TokenService>();
 builder.Services.AddTransient<IFindUserByNameQuery, FindUserByNameQuery>();
 builder.Services.AddTransient<IFindByIdQuery, FindUserByIdQuery>();
 builder.Services.AddTransient<IUpdateUserCommand, UpdateUserCommand>();
 
-builder.Services.AddScoped<IResolver<User, string>, UserResolver>();
-builder.Services.AddScoped<IResolver<UserResolvedPropertiesDto, UserUpdateDto>, UserUpdateResolver>();
+
+builder.Services.AddScoped<IUserResolver, UserResolver>();
+
 
 builder.Services.AddScoped<IResolver<Project, string>, ProjectResolver>();
 builder.Services.AddScoped<IResolver<Release, string>, ReleaseResolver>();

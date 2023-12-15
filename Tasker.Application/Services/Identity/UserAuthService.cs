@@ -1,9 +1,11 @@
 ﻿using Microsoft.AspNetCore.Identity;
-using Tasker.Application.DTOs;
 using Tasker.Application.DTOs.Auth;
 using Tasker.Application.Interfaces;
-using Tasker.Application.Interfaces.Repositories;
+using Tasker.Domain.Entities.Application;
 using Tasker.Domain.Entities.Identity;
+using Tasker.Domain.Models.Identity;
+using Tasker.Infrastructure.Repositories;
+using Task = System.Threading.Tasks.Task;
 
 namespace Tasker.Application.Services;
 
@@ -11,12 +13,12 @@ public class UserAuthService : IUserAuthService
 {
     private readonly SignInManager<ApplicationUser> _signInManager;
     private readonly UserManager<ApplicationUser> _userManager;
-    private readonly IUserRepository _userRepository;
+    private readonly EntityRepository<User> _userRepository;
     private readonly ITokenService _tokenService;
 
     public UserAuthService(ITokenService tokenService,
         SignInManager<ApplicationUser> signInManager,
-        UserManager<ApplicationUser> userManager, IUserRepository userRepository)
+        UserManager<ApplicationUser> userManager, EntityRepository<User> userRepository)
     {
         _signInManager = signInManager;
         _tokenService = tokenService;
@@ -38,9 +40,9 @@ public class UserAuthService : IUserAuthService
         return identityResult;
     }
 
-    public async Task<IdentityOperationResult> LoginUserAsync(LoginModel model)
+    public async Task<OperationResult> LoginUserAsync(LoginModel model)
     {
-        var result = new IdentityOperationResult();
+        var result = new OperationResult();
 
         var user = await _userManager.FindByEmailAsync(model.Email);
 
@@ -50,7 +52,7 @@ public class UserAuthService : IUserAuthService
 
             return result;
         }
-        
+
         var signInResult = await _signInManager.PasswordSignInAsync(
             user: user,
             password: model.Password,
@@ -71,9 +73,9 @@ public class UserAuthService : IUserAuthService
         return result;
     }
 
-    public async Task<IdentityOperationResult> UpdatePasswordAsync(PasswordUpdateModel model)
+    public async Task<OperationResult> UpdatePasswordAsync(PasswordUpdateModel model)
     {
-        var result = new IdentityOperationResult();
+        var result = new OperationResult();
 
         var user = await _userManager.FindByEmailAsync(model.Email);
 
@@ -93,7 +95,7 @@ public class UserAuthService : IUserAuthService
 
             return result;
         }
-        
+
         user.PasswordHash = _userManager.PasswordHasher.HashPassword(user, model.NewPassword);
 
         var updateResult = await _userManager.UpdateAsync(user);
@@ -106,7 +108,7 @@ public class UserAuthService : IUserAuthService
         {
             result.AddError("Invalid password change attempt.");
         }
-        
+
         return result;
     }
 
@@ -114,9 +116,9 @@ public class UserAuthService : IUserAuthService
 
     private async Task HandleApplicationUserCreation(ApplicationUser user)
     {
-        if (await _userRepository.GetAsync(user.Id) is null)
+        if (await _userRepository.GetByIdAsync(user.Id) is null)
         {
-            await _userRepository.CreateAsync(new()
+            await _userRepository.AddAsync(new()
             {
                 Id = user.Id,
                 Title = user.UserName!

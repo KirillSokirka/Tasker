@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Tasker.Application.DTOs.Application.KanbanBoard;
 using Tasker.Application.Interfaces.Repositories;
+using Tasker.Domain.Repositories;
 
 namespace Tasker.Controllers
 {

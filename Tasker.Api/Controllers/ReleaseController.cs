@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Tasker.Application.DTOs.Application.Release;
 using Tasker.Application.Interfaces.Repositories;
-using Tasker.Application.Repositories;
 
 namespace Tasker.Controllers
 {

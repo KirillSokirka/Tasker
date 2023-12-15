@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Tasker.Application.DTOs.Application.User;
-using Tasker.Application.Interfaces.Repositories;
+using Tasker.Application.Services.Application;
 
 namespace Tasker.Controllers;
 
@@ -8,17 +8,17 @@ namespace Tasker.Controllers;
 [Route("[controller]")]
 public class UserController : ControllerBase
 {
-    private readonly IUserRepository _userRepository;
+    private readonly UserService _service;
 
-    public UserController(IUserRepository userRepository)
+    public UserController(UserService service)
     {
-        _userRepository = userRepository;
+        _service = service;
     }
 
     [HttpGet("{id}")]
     public async Task<IActionResult> Get([FromRoute] string id)
     {
-        var dto = await _userRepository.GetAsync(id);
+        var dto = await _service.GetByIdAsync(id);
 
         return dto is null
             ? NotFound()
@@ -27,12 +27,12 @@ public class UserController : ControllerBase
     
     [HttpGet]
     public async Task<IActionResult> GetAll()
-        => Ok(await _userRepository.GetAllAsync());
+        => Ok(await _service.GetAllAsync());
 
     [HttpPut]
     public async Task<IActionResult> Update([FromBody] UserUpdateDto dto)
     {
-        var updatedDto = await _userRepository.UpdateAsync(dto);
+        var updatedDto = await _service.UpdateAsync(dto);
         
         return updatedDto is null
             ? NotFound()
@@ -42,7 +42,7 @@ public class UserController : ControllerBase
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete([FromRoute] string id)
     {
-        var deleted = await _userRepository.DeleteAsync(id);
+        var deleted = await _service.DeleteAsync(id);
 
         return deleted
             ? NoContent()
