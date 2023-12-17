@@ -53,7 +53,17 @@ namespace Tasker.Infrastructure.Migrations.ApplicationDb
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("UserId1")
+                        .HasColumnType("nvarchar(450)");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.HasIndex("UserId1");
 
                     b.ToTable("Projects");
                 });
@@ -113,14 +123,12 @@ namespace Tasker.Infrastructure.Migrations.ApplicationDb
                         .HasColumnType("int");
 
                     b.Property<string>("ProjectId")
-                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("ReleaseId")
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("TaskStatusId")
-                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Title")
@@ -191,6 +199,17 @@ namespace Tasker.Infrastructure.Migrations.ApplicationDb
                     b.Navigation("Project");
                 });
 
+            modelBuilder.Entity("Tasker.Domain.Entities.Application.Project", b =>
+                {
+                    b.HasOne("Tasker.Domain.Entities.Application.User", null)
+                        .WithMany("AssignedProjects")
+                        .HasForeignKey("UserId");
+
+                    b.HasOne("Tasker.Domain.Entities.Application.User", null)
+                        .WithMany("UnderControlProjects")
+                        .HasForeignKey("UserId1");
+                });
+
             modelBuilder.Entity("Tasker.Domain.Entities.Application.Release", b =>
                 {
                     b.HasOne("Tasker.Domain.Entities.Application.Project", "Project")
@@ -216,9 +235,7 @@ namespace Tasker.Infrastructure.Migrations.ApplicationDb
 
                     b.HasOne("Tasker.Domain.Entities.Application.Project", "Project")
                         .WithMany("Tasks")
-                        .HasForeignKey("ProjectId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("ProjectId");
 
                     b.HasOne("Tasker.Domain.Entities.Application.Release", "Release")
                         .WithMany("Tasks")
@@ -226,9 +243,7 @@ namespace Tasker.Infrastructure.Migrations.ApplicationDb
 
                     b.HasOne("Tasker.Domain.Entities.Application.TaskStatus", "Status")
                         .WithMany("Tasks")
-                        .HasForeignKey("TaskStatusId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("TaskStatusId");
 
                     b.Navigation("Assignee");
 
@@ -274,6 +289,13 @@ namespace Tasker.Infrastructure.Migrations.ApplicationDb
             modelBuilder.Entity("Tasker.Domain.Entities.Application.TaskStatus", b =>
                 {
                     b.Navigation("Tasks");
+                });
+
+            modelBuilder.Entity("Tasker.Domain.Entities.Application.User", b =>
+                {
+                    b.Navigation("AssignedProjects");
+
+                    b.Navigation("UnderControlProjects");
                 });
 #pragma warning restore 612, 618
         }

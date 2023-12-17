@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Tasker.Application.DTOs;
 using Tasker.Application.Interfaces;
+using Tasker.Domain.Models.Identity;
 
 namespace Tasker.Controllers;
 

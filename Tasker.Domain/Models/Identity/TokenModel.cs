@@ -1,4 +1,4 @@
-﻿namespace Tasker.Application.DTOs;
+﻿namespace Tasker.Domain.Models.Identity;
 
 public class TokenModel
 {

@@ -1,6 +1,8 @@
-﻿namespace Tasker.Application.DTOs;
+﻿using Tasker.Application.DTOs;
 
-public class LoginOperationResult
+namespace Tasker.Domain.Models.Identity;
+
+public class OperationResult
 {
     public bool IsSuccess => Errors.Count == 0;
     public List<string> Errors { get; } = new();
