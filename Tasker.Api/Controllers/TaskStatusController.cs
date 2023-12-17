@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Tasker.Application.DTOs.Application.TaskStatus;
+using Tasker.Application.Interfaces.Services;
 
 namespace Tasker.Controllers
 {
@@ -7,21 +8,21 @@ namespace Tasker.Controllers
     [Route("api/taskStatus")]
     public class TaskStatusController : ControllerBase
     {
-        private readonly ITaskStatusRepository _statusRepository;
+        private readonly ITaskStatusService _service;
 
-        public TaskStatusController(ITaskStatusRepository statusRepository)
+        public TaskStatusController(ITaskStatusService service)
         {
-            _statusRepository = statusRepository;
+            _service = service;
         }
 
         [HttpGet]
         public async Task<IActionResult> GetAll()
-        => Ok(await _statusRepository.GetAllAsync());
+            => Ok(await _service.GetAllAsync());
 
         [HttpGet("{id}")]
         public async Task<IActionResult> Get([FromRoute] string id)
         {
-            var dto = await _statusRepository.GetAsync(id);
+            var dto = await _service.GetByIdAsync(id);
 
             return dto is null
                 ? NotFound()
@@ -31,31 +32,27 @@ namespace Tasker.Controllers
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] TaskStatusCreateDto dto)
         {
-            var createdDto = await _statusRepository.CreateAsync(dto);
+            var createdDto = await _service.CreateAsync(dto);
 
-            return createdDto is null
-                ? Conflict(new { error = $"TaskStatus with name {dto.Name} already exists" })
-                : CreatedAtAction(nameof(Get), new { id = createdDto.Id }, createdDto);
+            return Ok(createdDto);
         }
 
         [HttpPut]
         public async Task<IActionResult> Update([FromBody] TaskStatusUpdateDto dto)
         {
-            var updatedDto = await _statusRepository.UpdateAsync(dto);
+            var updatedDto = await _service.UpdateAsync(dto);
 
-            return updatedDto is null
-                ? NotFound(new { error = $"TaskStatus with id {dto.Id} does not exist" })
-                : Ok(updatedDto);
+            return Ok(updatedDto);
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete([FromRoute] string id)
         {
-            var deleted = await _statusRepository.DeleteAsync(id);
+            var deleted = await _service.DeleteAsync(id);
 
             return deleted
                 ? NoContent()
-                : NotFound(new { error = $"TaskStatus with id {id} does not exist" });
+                : NotFound(new { error = $"Task status with id {id} does not exist" });
         }
     }
 }

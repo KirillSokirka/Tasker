@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Tasker.Application.DTOs.Application.Task;
-using Tasker.Application.Interfaces.Repositories;
+using Tasker.Application.Interfaces.Services;
 
 namespace Tasker.Controllers;
 
@@ -8,21 +8,21 @@ namespace Tasker.Controllers;
 [Route("[controller]")]
 public class TaskController : ControllerBase
 {
-    private readonly ITaskRepository _taskRepository;
+    private readonly ITaskService _service;
 
-    public TaskController(ITaskRepository taskRepository)
+    public TaskController(ITaskService service)
     {
-        _taskRepository = taskRepository;
+        _service = service;
     }
 
     [HttpGet]
     public async Task<IActionResult> GetAll()
-        => Ok(await _taskRepository.GetAllAsync());
+        => Ok(await _service.GetAllAsync());
 
     [HttpGet("{id}")]
     public async Task<IActionResult> Get([FromRoute] string id)
     {
-        var dto = await _taskRepository.GetAsync(id);
+        var dto = await _service.GetByIdAsync(id);
 
         return dto is null
             ? NotFound()
@@ -32,7 +32,7 @@ public class TaskController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Post([FromBody] TaskCreateDto dto)
     {
-        var createdDto = await _taskRepository.CreateAsync(dto);
+        var createdDto = await _service.CreateAsync(dto);
 
         return CreatedAtAction(nameof(Get), new { id = createdDto.Id }, createdDto);
     }
@@ -40,7 +40,7 @@ public class TaskController : ControllerBase
     [HttpPut]
     public async Task<IActionResult> Update([FromBody] TaskUpdateDto dto)
     {
-        var updatedDto = await _taskRepository.UpdateAsync( dto);
+        var updatedDto = await _service.UpdateAsync( dto);
 
         return updatedDto is null
             ? NotFound(new { error = $"Task with id {dto.Id} does not exist" })
@@ -50,7 +50,7 @@ public class TaskController : ControllerBase
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete([FromRoute] string id)
     {
-        var deleted = await _taskRepository.DeleteAsync(id);
+        var deleted = await _service.DeleteAsync(id);
 
         return deleted
             ? NoContent()

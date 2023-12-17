@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.Linq.Expressions;
+using Microsoft.EntityFrameworkCore;
 using Tasker.Domain.Repositories;
 
 namespace Tasker.Infrastructure.Repositories;
@@ -8,18 +9,21 @@ public class EntityRepository<TEntity> : IEntityRepository<TEntity> where TEntit
     protected readonly DbContext Context;
     protected readonly DbSet<TEntity> DbSet;
 
-    public EntityRepository(DbContext context)
+    protected EntityRepository(DbContext context)
     {
         Context = context;
         DbSet = context.Set<TEntity>();
     }
 
-    public virtual async Task<TEntity?> GetByIdAsync(string id)
-        => await DbSet.FindAsync(id);
-    
     public virtual async Task<List<TEntity>> GetAllAsync()
         => await DbSet.ToListAsync();
-    
+
+    public virtual async Task<TEntity?> GetByIdAsync(string id)
+        => await DbSet.FindAsync(id);
+
+    public virtual async Task<List<TEntity>> FindAsync(Expression<Func<TEntity, bool>> predicate)
+        => await DbSet.AsNoTracking().Where(predicate).ToListAsync();
+
     public async Task AddAsync(TEntity entity)
     {
         await DbSet.AddAsync(entity);

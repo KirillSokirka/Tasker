@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Tasker.Application.DTOs.Application.Project;
-using Tasker.Application.Resolvers.Interfaces;
+using Tasker.Application.Interfaces.Resolvers;
 using Tasker.Domain.Entities.Application;
 using Tasker.Domain.Exceptions;
 using Tasker.Infrastructure.Data.Application;

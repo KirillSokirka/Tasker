@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Tasker.Application.DTOs.Application.KanbanBoard;
-using Tasker.Application.Interfaces.Repositories;
-using Tasker.Domain.Repositories;
+using Tasker.Application.Interfaces.Services;
 
 namespace Tasker.Controllers
 {
@@ -9,21 +8,21 @@ namespace Tasker.Controllers
     [Route("api/kanbanBoards")]
     public class KanbanBoardController : ControllerBase
     {
-        private readonly IKanbanBoardRepository _boardRepository;
+        private readonly IKanbanBoardService _service;
 
-        public KanbanBoardController(IKanbanBoardRepository boardRepository)
+        public KanbanBoardController(IKanbanBoardService service)
         {
-            _boardRepository = boardRepository;
+            _service = service;
         }
 
         [HttpGet]
         public async Task<IActionResult> GetAll()
-        => Ok(await _boardRepository.GetAllAsync());
+        => Ok(await _service.GetAllAsync());
 
         [HttpGet("{id}")]
         public async Task<IActionResult> Get([FromRoute] string id)
         {
-            var dto = await _boardRepository.GetAsync(id);
+            var dto = await _service.GetByIdAsync(id);
 
             return dto is null
                 ? NotFound()
@@ -33,27 +32,23 @@ namespace Tasker.Controllers
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] KanbanBoardCreateDto dto)
         {
-            var createdDto = await _boardRepository.CreateAsync(dto);
+            var createdDto = await _service.CreateAsync(dto);
 
-            return createdDto is null
-                ? Conflict(new { error = $"KanbanBoard with name {dto.Title} already exists" })
-                : CreatedAtAction(nameof(Get), new { id = createdDto.Id }, createdDto);
+            return CreatedAtAction(nameof(Get), new { id = createdDto.Id }, createdDto);
         }
 
         [HttpPut]
         public async Task<IActionResult> Update([FromBody] KanbanBoardUpdateDto dto)
         {
-            var updatedDto = await _boardRepository.UpdateAsync(dto);
+            var updatedDto = await _service.UpdateAsync(dto);
 
-            return updatedDto is null
-                ? NotFound(new { error = $"KanbanBoard with id {dto.Id} does not exist" })
-                : Ok(updatedDto);
+            return Ok(updatedDto);
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete([FromRoute] string id)
         {
-            var deleted = await _boardRepository.DeleteAsync(id);
+            var deleted = await _service.DeleteAsync(id);
 
             return deleted
                 ? NoContent()

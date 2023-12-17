@@ -4,15 +4,14 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Tasker.Application.Commands;
-using Tasker.Application.DTOs.Application.Task;
 using Tasker.Application.Interfaces;
 using Tasker.Application.Interfaces.Commands;
 using Tasker.Application.Interfaces.Queries;
+using Tasker.Application.Interfaces.Resolvers;
+using Tasker.Application.Interfaces.Services;
 using Tasker.Application.MappingProfiles;
 using Tasker.Application.Queries;
 using Tasker.Application.Resolvers;
-using Tasker.Application.Resolvers.DTOs;
-using Tasker.Application.Resolvers.Interfaces;
 using Tasker.Application.Services;
 using Tasker.Domain.Entities.Application;
 using Tasker.Domain.Entities.Identity;
@@ -23,6 +22,9 @@ using Tasker.Middleware;
 using TaskStatus = Tasker.Domain.Entities.Application.TaskStatus;
 using Task = Tasker.Domain.Entities.Application.Task;
 using Tasker.Application.Resolver;
+using Tasker.Application.Services.Application;
+using Tasker.Domain.Repositories;
+using Tasker.Infrastructure.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -36,24 +38,36 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
     .AddEntityFrameworkStores<IdentityContext>()
     .AddDefaultTokenProviders();
 
-builder.Services.AddTransient<IUserAuthService, UserAuthService>();
-builder.Services.AddTransient<ITokenService, TokenService>();
+// Commands and Queries
 builder.Services.AddTransient<IFindUserByNameQuery, FindUserByNameQuery>();
 builder.Services.AddTransient<IFindByIdQuery, FindUserByIdQuery>();
+builder.Services.AddTransient<IGetUserRolesQuery, GetUserRolesQuery>();
 builder.Services.AddTransient<IUpdateUserCommand, UpdateUserCommand>();
 
+// Repositories
+builder.Services.AddScoped<IEntityRepository<User>, UserRepository>();
+builder.Services.AddScoped<IEntityRepository<Task>, TaskRepository>();
+builder.Services.AddScoped<IEntityRepository<TaskStatus>, TaskStatusRepository>();
+builder.Services.AddScoped<IEntityRepository<KanbanBoard>, KanbanBoardRepository>();
+builder.Services.AddScoped<IEntityRepository<Project>, ProjectRepository>();
+builder.Services.AddScoped<IEntityRepository<Release>, ReleaseRepository>();
 
+// Services
+builder.Services.AddTransient<IUserAuthService, UserAuthService>();
+builder.Services.AddTransient<ITokenService, TokenService>();
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<ITaskService, TaskService>();
+builder.Services.AddScoped<ITaskStatusService, TaskStatusService>();
+builder.Services.AddScoped<IReleaseService, ReleaseService>();
+builder.Services.AddScoped<IProjectService, ProjectService>();
+
+// Resolvers
 builder.Services.AddScoped<IUserResolver, UserResolver>();
-
-
+builder.Services.AddScoped<ITaskResolver, TaskResolver>();
 builder.Services.AddScoped<IResolver<Project, string>, ProjectResolver>();
 builder.Services.AddScoped<IResolver<Release, string>, ReleaseResolver>();
 builder.Services.AddScoped<IResolver<KanbanBoard, string>, KanbanBoardResolver>();
 builder.Services.AddScoped<IResolver<TaskStatus, string>, TaskStatusResolver>();
-
-builder.Services.AddScoped<IResolver<Task, string>, TaskResolver>();
-builder.Services.AddScoped<IResolver<TaskResolvedPropertiesDto, TaskUpdateDto>, TaskUpdateResolver>();
-
 
 builder.Services.AddAutoMapper(typeof(MappingProfile));
 

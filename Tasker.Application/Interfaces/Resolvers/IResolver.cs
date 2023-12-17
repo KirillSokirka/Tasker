@@ -1,4 +1,4 @@
-﻿namespace Tasker.Application.Resolvers.Interfaces;
+﻿namespace Tasker.Application.Interfaces.Resolvers;
 
 public interface IResolver<TResult, in TInput>
 {

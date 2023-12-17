@@ -11,8 +11,8 @@ public class TaskDto
     public required string ProjectId { get; set; }
     public required UserDto Creator { get; set; }
     public string Description { get; set; } = null!;
-    public string TaskStatusId { get; set; }
-    public string ReleaseId { get; set; }
+    public string? TaskStatusId { get; set; }
+    public string? ReleaseId { get; set; }
     public TaskPriority Priority { get; set; } = TaskPriority.None;
     public DateTime CreationDate { get; set; } = DateTime.Now;
     public UserDto? Assignee { get; set; }

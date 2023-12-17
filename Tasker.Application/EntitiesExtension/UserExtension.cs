@@ -1,5 +1,5 @@
-﻿using Tasker.Application.DTOs.Application.User;
-using Tasker.Application.Resolvers.DTOs;
+﻿using Tasker.Application.DTOs.Application.ResolvedProperties;
+using Tasker.Application.DTOs.Application.User;
 using Tasker.Domain.Entities.Application;
 
 namespace Tasker.Application.EntitiesExtension;

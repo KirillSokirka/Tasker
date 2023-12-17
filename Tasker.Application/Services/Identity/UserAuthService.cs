@@ -4,6 +4,7 @@ using Tasker.Application.Interfaces;
 using Tasker.Domain.Entities.Application;
 using Tasker.Domain.Entities.Identity;
 using Tasker.Domain.Models.Identity;
+using Tasker.Domain.Repositories;
 using Tasker.Infrastructure.Repositories;
 using Task = System.Threading.Tasks.Task;
 
@@ -13,12 +14,12 @@ public class UserAuthService : IUserAuthService
 {
     private readonly SignInManager<ApplicationUser> _signInManager;
     private readonly UserManager<ApplicationUser> _userManager;
-    private readonly EntityRepository<User> _userRepository;
+    private readonly IEntityRepository<User> _userRepository;
     private readonly ITokenService _tokenService;
 
     public UserAuthService(ITokenService tokenService,
         SignInManager<ApplicationUser> signInManager,
-        UserManager<ApplicationUser> userManager, EntityRepository<User> userRepository)
+        UserManager<ApplicationUser> userManager, IEntityRepository<User> userRepository)
     {
         _signInManager = signInManager;
         _tokenService = tokenService;

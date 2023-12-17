@@ -1,10 +1,10 @@
 ﻿using AutoMapper;
+using Tasker.Application.Interfaces;
 using Tasker.Domain.Repositories;
 
 namespace Tasker.Application.Services.Application;
 
-public class EntityService<TEntity, TDto> 
-    where TEntity : class
+public class EntityService<TEntity, TDto> : IEntityService<TDto> where TEntity : class
     where TDto : class
 {
     protected readonly IEntityRepository<TEntity> Repository;
@@ -23,7 +23,7 @@ public class EntityService<TEntity, TDto>
         return entity is null ? null : Mapper.Map<TDto>(entity);
     }
 
-    public async Task<IEnumerable<TDto>> GetAllAsync()
+    public virtual async Task<IEnumerable<TDto>> GetAllAsync()
     {
         var entities = await Repository.GetAllAsync();
         

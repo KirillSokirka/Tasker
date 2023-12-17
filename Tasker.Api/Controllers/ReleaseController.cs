@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Tasker.Application.DTOs.Application.Release;
-using Tasker.Application.Interfaces.Repositories;
+using Tasker.Application.Interfaces.Services;
 
 namespace Tasker.Controllers
 {
@@ -8,21 +8,21 @@ namespace Tasker.Controllers
     [Route("api/releases")]
     public class ReleaseController : ControllerBase
     {
-        private readonly IReleaseRepository _releaseRepository;
+        private readonly IReleaseService _service;
 
-        public ReleaseController(IReleaseRepository releaseRepository)
+        public ReleaseController(IReleaseService service)
         {
-            _releaseRepository = releaseRepository;
+            _service = service;
         }
 
         [HttpGet]
         public async Task<IActionResult> GetAll()
-        => Ok(await _releaseRepository.GetAllAsync());
+        => Ok(await _service.GetAllAsync());
 
         [HttpGet("{id}")]
         public async Task<IActionResult> Get([FromRoute] string id)
         {
-            var dto = await _releaseRepository.GetAsync(id);
+            var dto = await _service.GetByIdAsync(id);
 
             return dto is null
                 ? NotFound()
@@ -32,17 +32,15 @@ namespace Tasker.Controllers
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] ReleaseCreateDto dto)
         {
-            var createdDto = await _releaseRepository.CreateAsync(dto);
+            var createdDto = await _service.CreateAsync(dto);
 
-            return createdDto is null
-                ? Conflict(new { error = $"Project with name {dto.Title} already exists" })
-                : CreatedAtAction(nameof(Get), new { id = createdDto.Id }, createdDto);
+            return CreatedAtAction(nameof(Get), new { id = createdDto.Id }, createdDto);
         }
 
         [HttpPut]
         public async Task<IActionResult> Update([FromBody] ReleaseUpdateDto dto)
         {
-            var updatedDto = await _releaseRepository.UpdateAsync(dto);
+            var updatedDto = await _service.UpdateAsync(dto);
 
             return updatedDto is null
                 ? NotFound(new { error = $"Project with id {dto.Id} does not exist" })
@@ -52,7 +50,7 @@ namespace Tasker.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete([FromRoute] string id)
         {
-            var deleted = await _releaseRepository.DeleteAsync(id);
+            var deleted = await _service.DeleteAsync(id);
 
             return deleted
                 ? NoContent()

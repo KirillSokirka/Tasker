@@ -1,13 +1,14 @@
 ﻿using AutoMapper;
 using Tasker.Application.DTOs.Application.User;
 using Tasker.Application.EntitiesExtension;
-using Tasker.Application.Resolvers.Interfaces;
+using Tasker.Application.Interfaces;
+using Tasker.Application.Interfaces.Resolvers;
 using Tasker.Domain.Entities.Application;
 using Tasker.Domain.Repositories;
 
 namespace Tasker.Application.Services.Application;
 
-public class UserService : EntityService<User, UserDto>
+public class UserService : EntityService<User, UserDto>, IUserService
 {
     private readonly IUserResolver _resolver;
 
@@ -22,10 +23,8 @@ public class UserService : EntityService<User, UserDto>
         var user = Mapper.Map<User>(createDto);
 
         await Repository.AddAsync(user);
-
-        user = await Repository.GetByIdAsync(user.Id);
-
-        return Mapper.Map<UserDto>(user);
+        
+        return (await GetByIdAsync(user!.Id))!;
     }
 
     public async Task<UserDto?> UpdateAsync(UserUpdateDto dto)
@@ -40,7 +39,9 @@ public class UserService : EntityService<User, UserDto>
         var resolvedProperties = await _resolver.ResolveAsync(dto);
 
         user.Update(dto, resolvedProperties);
-
-        return Mapper.Map<UserDto>(user);
+        
+        await Repository.UpdateAsync(user);
+        
+        return (await GetByIdAsync(user!.Id))!;
     }
 }

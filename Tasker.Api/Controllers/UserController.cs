@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Tasker.Application.DTOs.Application.User;
-using Tasker.Application.Services.Application;
+using Tasker.Application.Interfaces;
 
 namespace Tasker.Controllers;
 
@@ -8,9 +8,9 @@ namespace Tasker.Controllers;
 [Route("[controller]")]
 public class UserController : ControllerBase
 {
-    private readonly UserService _service;
+    private readonly IUserService _service;
 
-    public UserController(UserService service)
+    public UserController(IUserService service)
     {
         _service = service;
     }
@@ -46,6 +46,6 @@ public class UserController : ControllerBase
 
         return deleted
             ? NoContent()
-            : NotFound(new { error = $"Project with id {id} does not exist" });
+            : NotFound(new { error = $"User with id {id} does not exist" });
     }
 }

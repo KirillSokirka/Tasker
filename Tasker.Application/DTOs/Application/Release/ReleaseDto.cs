@@ -13,6 +13,6 @@ namespace Tasker.Application.DTOs.Application.Release
 
         public string? ProjectId { get; set; }
 
-        public List<PreviewTaskDto> Tasks { get; set; }
+        public List<TaskPreviewDto> Tasks { get; set; }
     }
 }
