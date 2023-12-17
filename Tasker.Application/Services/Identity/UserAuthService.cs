@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Tasker.Application.DTOs.Auth;
 using Tasker.Application.Interfaces;
+using Tasker.Application.Interfaces.Services;
 using Tasker.Domain.Entities.Application;
 using Tasker.Domain.Entities.Identity;
 using Tasker.Domain.Models.Identity;
@@ -32,7 +33,9 @@ public class UserAuthService : IUserAuthService
         var user = new ApplicationUser { UserName = model.Username, Email = model.Email };
 
         var identityResult = await _userManager.CreateAsync(user, model.Password);
-
+        
+        await _userManager.AddToRoleAsync(user, "User");
+        
         if (identityResult.Succeeded)
         {
             await HandleApplicationUserCreation(user);
@@ -113,6 +116,29 @@ public class UserAuthService : IUserAuthService
         return result;
     }
 
+    public async Task<OperationResult> UpdateUserRolesAsync(UpdateUserRoleModel model)
+    {
+        var result = new OperationResult();
+
+        var user = await _userManager.FindByEmailAsync(model.Email);
+        
+        if (user is null)
+        {
+            result.AddError($"The user with email {model.Email} doesn't exist");
+
+            return result;
+        }
+
+        var updateResult = _userManager.AddToRolesAsync(user, model.Roles);
+        
+        if (!updateResult.Result.Succeeded)
+        {
+            result.AddError("The error during user roles change occured. ");
+        }
+
+        return result;
+    }
+    
     #region Private Methods
 
     private async Task HandleApplicationUserCreation(ApplicationUser user)

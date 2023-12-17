@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Tasker.Application.DTOs.Application.Project;
 using Tasker.Application.Interfaces.Services;
 
@@ -29,7 +30,8 @@ namespace Tasker.Controllers
                 ? NotFound()
                 : Ok(dto);
         }
-
+        
+        [Authorize(Roles = "SuperAdmin,Admin")]
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] ProjectCreateDto dto)
         {
@@ -37,7 +39,8 @@ namespace Tasker.Controllers
 
             return CreatedAtAction(nameof(Get), new { id = createdDto.Id }, createdDto);
         }
-
+        
+        [Authorize(Roles = "SuperAdmin,Admin")]
         [HttpPut]
         public async Task<IActionResult> Update([FromBody] ProjectUpdateDto dto)
         {
@@ -45,7 +48,8 @@ namespace Tasker.Controllers
 
             return Ok(updatedDto);
         }
-
+    
+        [Authorize(Roles = "SuperAdmin,Admin")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete([FromRoute] string id)
         {

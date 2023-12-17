@@ -36,6 +36,7 @@ builder.Services.AddDbContext<ApplicationContext>(options =>
 
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
     .AddEntityFrameworkStores<IdentityContext>()
+    .AddRoles<IdentityRole>()
     .AddDefaultTokenProviders();
 
 // Commands and Queries
@@ -60,6 +61,7 @@ builder.Services.AddScoped<ITaskService, TaskService>();
 builder.Services.AddScoped<ITaskStatusService, TaskStatusService>();
 builder.Services.AddScoped<IReleaseService, ReleaseService>();
 builder.Services.AddScoped<IProjectService, ProjectService>();
+builder.Services.AddScoped<IKanbanBoardService, KanbanBoardService>();
 
 // Resolvers
 builder.Services.AddScoped<IUserResolver, UserResolver>();
@@ -94,7 +96,7 @@ builder.Services.AddAuthentication(x =>
                                 throw new KeyNotFoundException("Key should be specified"))),
         ValidateIssuer = true,
         ValidateAudience = true,
-        ValidateLifetime = false,
+        ValidateLifetime = true,
         ValidateIssuerSigningKey = true
     };
 });
@@ -123,9 +125,10 @@ using (var scope = app.Services.CreateScope())
     }
 
     var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
-
+    var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
 
     await IdentityDbSeeder.SeedRolesAsync(roleManager);
+    await IdentityDbSeeder.SeedTestUserAsync(userManager);
 }
 
 app.UseSwagger();

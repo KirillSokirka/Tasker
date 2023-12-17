@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Tasker.Application.DTOs.Application.Release;
 using Tasker.Application.Interfaces.Services;
 
@@ -28,7 +29,8 @@ namespace Tasker.Controllers
                 ? NotFound()
                 : Ok(dto);
         }
-
+        
+        [Authorize(Roles = "SuperAdmin,Admin")]
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] ReleaseCreateDto dto)
         {
@@ -36,7 +38,8 @@ namespace Tasker.Controllers
 
             return CreatedAtAction(nameof(Get), new { id = createdDto.Id }, createdDto);
         }
-
+        
+        [Authorize(Roles = "SuperAdmin,Admin")]
         [HttpPut]
         public async Task<IActionResult> Update([FromBody] ReleaseUpdateDto dto)
         {
@@ -46,7 +49,8 @@ namespace Tasker.Controllers
                 ? NotFound(new { error = $"Project with id {dto.Id} does not exist" })
                 : Ok(updatedDto);
         }
-
+        
+        [Authorize(Roles = "SuperAdmin,Admin")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete([FromRoute] string id)
         {

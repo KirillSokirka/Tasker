@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Tasker.Application.DTOs;
 using Tasker.Application.DTOs.Auth;
 using Tasker.Application.Interfaces;
+using Tasker.Application.Interfaces.Services;
 using Tasker.Domain.Models.Identity;
 
 namespace Tasker.Controllers;
@@ -74,6 +74,30 @@ public class AuthController : ControllerBase
         }
 
         var operationResult = await _userAuthService.UpdatePasswordAsync(model);
+
+        if (operationResult.IsSuccess)
+        {
+            return Ok(new { operationResult.Token });
+        }
+
+        foreach (var error in operationResult.Errors)
+        {
+            ModelState.AddModelError("", error);
+        }
+
+        return BadRequest(ModelState);
+    }
+    
+    [Authorize(Roles = "SuperAdmin")]
+    [HttpPost("change-user-role")]
+    public async Task<IActionResult> UpdateUserRoles([FromBody] UpdateUserRoleModel model)
+    {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+
+        var operationResult = await _userAuthService.UpdateUserRolesAsync(model);
 
         if (operationResult.IsSuccess)
         {

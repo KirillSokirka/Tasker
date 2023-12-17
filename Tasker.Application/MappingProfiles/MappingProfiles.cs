@@ -41,8 +41,20 @@ public class MappingProfile : Profile
             src.Columns.Select(t => new TaskStatusDto
             {
                 Id = t.Id,
-                Name = t.Name
-            })));
+                Name = t.Name,
+                Tasks = t.Tasks.Select(task => new TaskPreviewDto
+                {
+                    Id = task.Id,
+                    Title = task.Title!,
+                    TaskStatusName = t.Name
+                }).ToList()
+            })))
+            .ForMember(dest => dest.Project, opt => opt.MapFrom(src => new ProjectDto
+            {
+                Id = src.Id,
+                Title = src.Id
+            }));
+        
         CreateMap<KanbanBoardUpdateDto, KanbanBoard>();
 
         CreateMap<Release, ReleaseDto>()

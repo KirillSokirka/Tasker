@@ -58,9 +58,9 @@ public class KanbanBoardService : EntityService<KanbanBoard, KanbanBoardDto>, IK
             (await Repository.FindAsync(r => r.Title == title && r.ProjectId == projectId))
             .FirstOrDefault() is not null;
 
-        if (!result)
+        if (result)
         {
-            throw new InvalidEntityException($"The same release is already exist in current project");
+            throw new InvalidEntityException($"The same kanban board is already exist in current project");
         }
     }
 }

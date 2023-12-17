@@ -1,10 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Tasker.Application.DTOs.Application.User;
 using Tasker.Application.Interfaces;
 
 namespace Tasker.Controllers;
 
 [ApiController]
+[Authorize(Roles = "SuperAdmin,Admin")]
 [Route("[controller]")]
 public class UserController : ControllerBase
 {
@@ -14,7 +16,7 @@ public class UserController : ControllerBase
     {
         _service = service;
     }
-
+    
     [HttpGet("{id}")]
     public async Task<IActionResult> Get([FromRoute] string id)
     {
@@ -24,7 +26,7 @@ public class UserController : ControllerBase
             ? NotFound()
             : Ok(dto);
     }
-    
+
     [HttpGet]
     public async Task<IActionResult> GetAll()
         => Ok(await _service.GetAllAsync());
