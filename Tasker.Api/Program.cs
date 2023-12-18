@@ -67,7 +67,7 @@ builder.Services.AddScoped<IKanbanBoardService, KanbanBoardService>();
 // Resolvers
 builder.Services.AddScoped<IUserResolver, UserResolver>();
 builder.Services.AddScoped<ITaskResolver, TaskResolver>();
-builder.Services.AddScoped<IResolver<Project, string>, ProjectResolver>();
+builder.Services.AddScoped<IProjectResolver, ProjectResolver>();
 builder.Services.AddScoped<IResolver<Release, string>, ReleaseResolver>();
 builder.Services.AddScoped<IResolver<KanbanBoard, string>, KanbanBoardResolver>();
 builder.Services.AddScoped<IResolver<TaskStatus, string>, TaskStatusResolver>();

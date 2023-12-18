@@ -4,6 +4,6 @@ public class User
 {
     public string Id { get; set; } = null!;
     public string Title { get; set; } = null!;
-    public List<Project>? AssignedProjects { get; set; }
-    public List<Project>? UnderControlProjects { get; set; }
+    public List<AssignedProjectUser>? AssignedProjectUsers { get; set; }
+    public List<AdminProjectUser>? AdminProjectUsers { get; set; }
 }

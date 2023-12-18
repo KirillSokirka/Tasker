@@ -17,11 +17,9 @@ public class ApplicationContext : DbContext
     public DbSet<Task> Tasks { get; set; }
     public DbSet<TaskStatus> TaskStatuses { get; set; }
     public DbSet<User> User { get; set; }
-
-    //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) => optionsBuilder
-    //        .UseLazyLoadingProxies(false)
-    //        .UseSqlServer(...);
-
+    
+    public DbSet<AdminProjectUser> AdminProjectUsers { get; set; }
+    public DbSet<AssignedProjectUser> AssignedProjectUsers { get; set; }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -132,5 +130,33 @@ public class ApplicationContext : DbContext
             .HasMany(kb => kb.Columns)
             .WithOne(ts => ts.KanbanBoard)
             .HasForeignKey(ts => ts.KanbanBoardId);
+        
+        // Projects and User: Many-to-Many
+        modelBuilder.Entity<AdminProjectUser>()
+            .HasKey(pu => new { pu.ProjectId, pu.UserId });
+
+        modelBuilder.Entity<AdminProjectUser>()
+            .HasOne(pu => pu.Project)
+            .WithMany(p => p.AdminProjectUsers)
+            .HasForeignKey(pu => pu.ProjectId);
+
+        modelBuilder.Entity<AdminProjectUser>()
+            .HasOne(pu => pu.User)
+            .WithMany(u => u.AdminProjectUsers)
+            .HasForeignKey(pu => pu.UserId);
+        
+        modelBuilder.Entity<AssignedProjectUser>()
+            .HasKey(pu => new { pu.ProjectId, pu.UserId });
+
+        modelBuilder.Entity<AssignedProjectUser>()
+            .HasOne(pu => pu.Project)
+            .WithMany(p => p.AssignedProjectUsers)
+            .HasForeignKey(pu => pu.ProjectId);
+
+        modelBuilder.Entity<AssignedProjectUser>()
+            .HasOne(pu => pu.User)
+            .WithMany(u => u.AssignedProjectUsers)
+            .HasForeignKey(pu => pu.UserId);
+        
     }
 }
