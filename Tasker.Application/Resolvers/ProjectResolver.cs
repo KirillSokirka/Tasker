@@ -22,7 +22,7 @@ public class ProjectResolver : IProjectResolver
            ?? throw new InvalidEntityException($"Project with id {id} doesnt exists");
     
     public async Task<List<AdminProjectUser>> ResolveAdminProjectsAsync(
-        Expression<Func<AdminProjectUser, bool>> predicate, List<UserProjectDto> userProjectDto)
+        Expression<Func<AdminProjectUser, bool>> predicate, List<UserProjectDto>? userProjectDto)
     {
         var existingEntities = await _context.AdminProjectUsers.Where(predicate).ToListAsync();
 
@@ -52,7 +52,7 @@ public class ProjectResolver : IProjectResolver
     }
 
     public async Task<List<AssignedProjectUser>> ResolveAssignedProjectsAsync(
-        Expression<Func<AssignedProjectUser, bool>> predicate, List<UserProjectDto> userProjectDto)
+        Expression<Func<AssignedProjectUser, bool>> predicate, List<UserProjectDto>? userProjectDto)
     {
         var existingEntities = await _context.AssignedProjectUsers.Where(predicate).ToListAsync();
 

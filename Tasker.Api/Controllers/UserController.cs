@@ -33,7 +33,6 @@ public class UserController : ControllerBase
     [HttpPut]
     public async Task<IActionResult> Update([FromBody] UserUpdateDto dto)
     {
-        var user = 
         var updatedDto = await _service.UpdateAsync(dto);
         
         return updatedDto is null

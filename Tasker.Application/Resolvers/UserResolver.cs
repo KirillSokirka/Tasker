@@ -1,4 +1,5 @@
-﻿using Tasker.Application.DTOs.Application.ResolvedProperties;
+﻿using Tasker.Application.DTOs.Application.Project;
+using Tasker.Application.DTOs.Application.ResolvedProperties;
 using Tasker.Application.DTOs.Application.User;
 using Tasker.Application.Interfaces.Resolvers;
 using Tasker.Domain.Entities.Application;
@@ -22,14 +23,15 @@ public class UserResolver : IUserResolver
         => await _repository.GetByIdAsync(id)
            ?? throw new InvalidEntityException($"The user with {id} was not found");
 
-    public async Task<UserResolvedPropertiesDto> ResolveAsync(UserUpdateDto dto, string userId)
+    public async Task<UserResolvedPropertiesDto> ResolveAsync(List<UserProjectDto>? assigned,
+        List<UserProjectDto>? admin, string userId)
         => new()
         {
-            AssignedProjects = dto.AssignedProjects is not null
-                ? await _resolver.ResolveAssignedProjectsAsync(p => p.UserId == userId, dto.AssignedProjects)
+            AssignedProjects = assigned is not null
+                ? await _resolver.ResolveAssignedProjectsAsync(p => p.UserId == userId, assigned)
                 : null,
-            UnderControlProjects = dto.UnderControlProjects is not null 
-                ? await _resolver.ResolveAdminProjectsAsync(p => p.UserId == userId, dto.UnderControlProjects)
+            UnderControlProjects = admin is not null
+                ? await _resolver.ResolveAdminProjectsAsync(p => p.UserId == userId, admin)
                 : null
         };
 }

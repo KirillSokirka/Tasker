@@ -9,8 +9,8 @@ public interface IProjectResolver
     Task<Project> ResolveAsync(string id);
 
     Task<List<AdminProjectUser>> ResolveAdminProjectsAsync(
-        Expression<Func<AdminProjectUser, bool>> predicate, List<UserProjectDto> userProjectDto);
+        Expression<Func<AdminProjectUser, bool>> predicate, List<UserProjectDto>? userProjectDto);
 
     Task<List<AssignedProjectUser>> ResolveAssignedProjectsAsync(
-        Expression<Func<AssignedProjectUser, bool>> predicate, List<UserProjectDto> userProjectDto);
+        Expression<Func<AssignedProjectUser, bool>> predicate, List<UserProjectDto>? userProjectDto);
 }
