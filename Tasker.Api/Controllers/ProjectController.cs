@@ -66,9 +66,9 @@ namespace Tasker.Controllers
         public async Task<IActionResult> Post([FromBody] ProjectCreateDto dto)
         {
             dto.UserId = await _userQuery.GetUserId(HttpContext);
+            
             var createdDto = await _service.CreateAsync(dto);
-
-
+            
             return CreatedAtAction(nameof(Get), new { id = createdDto.Id }, createdDto);
         }
 
