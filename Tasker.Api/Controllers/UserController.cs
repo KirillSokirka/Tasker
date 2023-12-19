@@ -42,10 +42,10 @@ public class UserController : ControllerBase
             : Ok(updatedDto);
     } 
     
-    [HttpDelete("{id}")]
-    public async Task<IActionResult> Delete([FromRoute] string id)
+    [HttpDelete("{id?}")]
+    public async Task<IActionResult> Delete([FromRoute] string id = null)
     {
-        if(id == "-1")
+        if (id == null)
         {
             id = await _userQuery.GetUserId(HttpContext);
         }
