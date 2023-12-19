@@ -16,10 +16,22 @@ namespace Tasker.Controllers
             _service = service;
         }
 
+        //[Authorize(Roles = "SuperAdmin")]
         [HttpGet]
         public async Task<IActionResult> GetAll()
         => Ok(await _service.GetAllAsync());
 
+        [Authorize]
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetAllByProject([FromRoute] string id)
+        {
+            var allKanbanBoards = await _service.GetAllAsync();
+
+
+            return Ok(allKanbanBoards.Where(b => b.ProjectId == id));
+        }
+
+        [Authorize]
         [HttpGet("{id}")]
         public async Task<IActionResult> Get([FromRoute] string id)
         {
