@@ -1,10 +1,8 @@
-﻿using System.Security.Claims;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Tasker.Application.DTOs.Application.Project;
 using Tasker.Application.Interfaces.Queries;
 using Tasker.Application.Interfaces.Services;
-
 
 namespace Tasker.Controllers
 {
@@ -13,39 +11,39 @@ namespace Tasker.Controllers
     public class ProjectController : ControllerBase
     {
         private readonly IProjectService _service;
-        private readonly IFindUserByNameQuery _query;
+        private readonly IGetUserQuery _userQuery;
 
-        public ProjectController(IProjectService service, IFindUserByNameQuery query)
+        public ProjectController(IProjectService service, IGetUserQuery userQuery)
         {
             _service = service;
-            _query = query;
+            _userQuery = userQuery;
         }
 
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var id = await GetUserId();
+            var id = await _userQuery.GetUserId(HttpContext);
 
             if (id is null)
             {
-                return NoContent();
+                return Unauthorized();
             }
 
             var allowedProjects = (await _service.GetAllAsync()).Where(project =>
                 (project.AssignedProjects ?? new List<string>()).Contains(id) ||
                 (project.UnderControlProjects ?? new List<string>()).Contains(id));
 
-            return Ok(allowedProjects);
+            return allowedProjects.Any() ? Ok(allowedProjects) : NoContent();
         }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> Get([FromRoute] string id)
         {
-            var userId = await GetUserId();
+            var userId = await _userQuery.GetUserId(HttpContext);
 
             if (userId is null)
             {
-                return NoContent();
+                return Unauthorized();
             }
 
             var dto = await _service.GetByIdAsync(id);
@@ -85,20 +83,6 @@ namespace Tasker.Controllers
             return deleted
                 ? NoContent()
                 : NotFound(new { error = $"Project with id {id} does not exist" });
-        }
-
-        private async Task<string?> GetUserId()
-        {
-            var userIdClaim = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier);
-
-            if (userIdClaim is null)
-            {
-                return null;
-            }
-
-            var user = await _query.ExecuteAsync(userIdClaim.Value);
-
-            return user?.Id;
         }
     }
 }

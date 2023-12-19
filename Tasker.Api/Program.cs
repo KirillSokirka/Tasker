@@ -42,6 +42,7 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
 // Commands and Queries
 builder.Services.AddTransient<IFindUserByNameQuery, FindUserByNameQuery>();
 builder.Services.AddTransient<IFindByIdQuery, FindUserByIdQuery>();
+builder.Services.AddTransient<IGetUserQuery, GetUserQuery>();
 builder.Services.AddTransient<IGetUserRolesQuery, GetUserRolesQuery>();
 builder.Services.AddTransient<IUpdateUserCommand, UpdateUserCommand>();
 
