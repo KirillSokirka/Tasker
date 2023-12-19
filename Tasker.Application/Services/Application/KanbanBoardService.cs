@@ -11,10 +11,10 @@ namespace Tasker.Application.Services.Application;
 
 public class KanbanBoardService : EntityService<KanbanBoard, KanbanBoardDto>, IKanbanBoardService
 {
-    private readonly IResolver<Project, string> _projectResolver;
+    private readonly IProjectResolver _projectResolver;
 
     public KanbanBoardService(IEntityRepository<KanbanBoard> repository, IMapper mapper,
-        IResolver<Project, string> projectResolver) : base(repository, mapper)
+        IProjectResolver projectResolver) : base(repository, mapper)
     {
         _projectResolver = projectResolver;
     }

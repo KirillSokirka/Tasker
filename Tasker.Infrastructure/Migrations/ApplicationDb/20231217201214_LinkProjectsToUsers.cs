@@ -10,32 +10,8 @@ namespace Tasker.Infrastructure.Migrations.ApplicationDb
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropForeignKey(
-                name: "FK_Projects_User_UserId",
-                table: "Projects");
-
-            migrationBuilder.DropForeignKey(
-                name: "FK_Projects_User_UserId1",
-                table: "Projects");
-
-            migrationBuilder.DropIndex(
-                name: "IX_Projects_UserId",
-                table: "Projects");
-
-            migrationBuilder.DropIndex(
-                name: "IX_Projects_UserId1",
-                table: "Projects");
-
-            migrationBuilder.DropColumn(
-                name: "UserId",
-                table: "Projects");
-
-            migrationBuilder.DropColumn(
-                name: "UserId1",
-                table: "Projects");
-
             migrationBuilder.CreateTable(
-                name: "AdminProjectUser",
+                name: "AdminProjectUsers",
                 columns: table => new
                 {
                     ProjectId = table.Column<string>(type: "nvarchar(450)", nullable: false),
@@ -59,7 +35,7 @@ namespace Tasker.Infrastructure.Migrations.ApplicationDb
                 });
 
             migrationBuilder.CreateTable(
-                name: "AssignedProjectUser",
+                name: "AssignedProjectUsers",
                 columns: table => new
                 {
                     ProjectId = table.Column<string>(type: "nvarchar(450)", nullable: false),
@@ -84,12 +60,12 @@ namespace Tasker.Infrastructure.Migrations.ApplicationDb
 
             migrationBuilder.CreateIndex(
                 name: "IX_AdminProjectUser_UserId",
-                table: "AdminProjectUser",
+                table: "AdminProjectUsers",
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_AssignedProjectUser_UserId",
-                table: "AssignedProjectUser",
+                table: "AssignedProjectUsers",
                 column: "UserId");
         }
 
@@ -97,46 +73,10 @@ namespace Tasker.Infrastructure.Migrations.ApplicationDb
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "AdminProjectUser");
+                name: "AdminProjectUsers");
 
             migrationBuilder.DropTable(
-                name: "AssignedProjectUser");
-
-            migrationBuilder.AddColumn<string>(
-                name: "UserId",
-                table: "Projects",
-                type: "nvarchar(450)",
-                nullable: true);
-
-            migrationBuilder.AddColumn<string>(
-                name: "UserId1",
-                table: "Projects",
-                type: "nvarchar(450)",
-                nullable: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Projects_UserId",
-                table: "Projects",
-                column: "UserId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Projects_UserId1",
-                table: "Projects",
-                column: "UserId1");
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_Projects_User_UserId",
-                table: "Projects",
-                column: "UserId",
-                principalTable: "User",
-                principalColumn: "Id");
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_Projects_User_UserId1",
-                table: "Projects",
-                column: "UserId1",
-                principalTable: "User",
-                principalColumn: "Id");
+                name: "AssignedProjectUsers");
         }
     }
 }

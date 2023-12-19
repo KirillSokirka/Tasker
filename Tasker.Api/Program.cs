@@ -22,7 +22,6 @@ using Tasker.Infrastructure.Data.Seed;
 using Tasker.Middleware;
 using TaskStatus = Tasker.Domain.Entities.Application.TaskStatus;
 using Task = Tasker.Domain.Entities.Application.Task;
-using Tasker.Application.Resolver;
 using Tasker.Application.Services.Application;
 using Tasker.Domain.Repositories;
 using Tasker.Infrastructure.Repositories;

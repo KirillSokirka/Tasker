@@ -17,9 +17,9 @@ public class ApplicationContext : DbContext
     public DbSet<Task> Tasks { get; set; }
     public DbSet<TaskStatus> TaskStatuses { get; set; }
     public DbSet<User> User { get; set; }
-    
     public DbSet<AdminProjectUser> AdminProjectUsers { get; set; }
     public DbSet<AssignedProjectUser> AssignedProjectUsers { get; set; }
+    
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -28,7 +28,7 @@ public class ApplicationContext : DbContext
         ConfigurePropertyConventions(modelBuilder);
         ConfigureRelationships(modelBuilder);
     }
-
+    
     private void ConfigurePrimaryKeys(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<KanbanBoard>().HasKey(e => e.Id);
@@ -36,7 +36,8 @@ public class ApplicationContext : DbContext
         modelBuilder.Entity<Release>().HasKey(e => e.Id);
         modelBuilder.Entity<Task>().HasKey(e => e.Id);
         modelBuilder.Entity<TaskStatus>().HasKey(e => e.Id);
-        modelBuilder.Entity<User>().HasKey(e => e.Id);
+        modelBuilder.Entity<AdminProjectUser>().HasKey(e => new { e.ProjectId, e.UserId});
+        modelBuilder.Entity<AssignedProjectUser>().HasKey(e => new { e.ProjectId, e.UserId});
     }
 
     private void ConfigurePropertyConventions(ModelBuilder modelBuilder)

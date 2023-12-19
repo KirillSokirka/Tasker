@@ -15,6 +15,8 @@ public class ProjectRepository : EntityRepository<Project>
             .Include(p => p.KanbanBoards)
             .Include(p => p.Tasks)
             .Include(p => p.Releases)
+            .Include(p => p.AdminProjectUsers)
+            .Include(p => p.AssignedProjectUsers)
             .AsNoTracking().FirstOrDefaultAsync(p => p.Id == id);
 
     public override async Task<List<Project>> GetAllAsync() =>
@@ -22,6 +24,8 @@ public class ProjectRepository : EntityRepository<Project>
             .Include(p => p.KanbanBoards)
             .Include(p => p.Tasks)
             .Include(p => p.Releases)
+            .Include(p => p.AdminProjectUsers)
+            .Include(p => p.AssignedProjectUsers)
             .AsNoTracking()
             .ToListAsync();
 }

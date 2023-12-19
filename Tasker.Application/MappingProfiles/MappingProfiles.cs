@@ -35,26 +35,32 @@ public class MappingProfile : Profile
             {
                 Id = val.Id,
                 Title = val.Title
-            })));
+            })))
+            .ForMember(dest => dest.AssignedProjects, opt => opt.MapFrom(src => src.AssignedProjectUsers != null
+                ? src.AssignedProjectUsers.Select(i => i.UserId)
+                : null))
+            .ForMember(dest => dest.UnderControlProjects, opt => opt.MapFrom(src => src.AdminProjectUsers != null
+                ? src.AdminProjectUsers.Select(i => i.UserId)
+                : null));
 
         CreateMap<KanbanBoard, KanbanBoardDto>().ForMember(dest => dest.Columns, opt => opt.MapFrom(src =>
-            src.Columns.Select(t => new TaskStatusDto
-            {
-                Id = t.Id,
-                Name = t.Name,
-                Tasks = t.Tasks.Select(task => new TaskPreviewDto
+                src.Columns.Select(t => new TaskStatusDto
                 {
-                    Id = task.Id,
-                    Title = task.Title!,
-                    TaskStatusName = t.Name
-                }).ToList()
-            })))
+                    Id = t.Id,
+                    Name = t.Name,
+                    Tasks = t.Tasks.Select(task => new TaskPreviewDto
+                    {
+                        Id = task.Id,
+                        Title = task.Title!,
+                        TaskStatusName = t.Name
+                    }).ToList()
+                })))
             .ForMember(dest => dest.Project, opt => opt.MapFrom(src => new ProjectDto
             {
                 Id = src.Id,
                 Title = src.Id
             }));
-        
+
         CreateMap<KanbanBoardUpdateDto, KanbanBoard>();
 
         CreateMap<Release, ReleaseDto>()
@@ -66,7 +72,13 @@ public class MappingProfile : Profile
             })));
         CreateMap<Release, ReleaseCreateDto>().ReverseMap();
 
-        CreateMap<User, UserDto>().ReverseMap();
+        CreateMap<User, UserDto>()
+            .ForMember(dest => dest.AssignedProjects, opt => opt.MapFrom(src => src.AssignedProjectUsers != null
+                ? src.AssignedProjectUsers.Select(i => i.ProjectId)
+                : null))
+            .ForMember(dest => dest.UnderControlProjects, opt => opt.MapFrom(src => src.AdminProjectUsers != null
+                ? src.AdminProjectUsers.Select(i => i.ProjectId)
+                : null));
 
         CreateMap<Task, TaskDto>()
             .ForMember(t => t.ProjectId, dto => dto.MapFrom(t => t.Project!.Id))

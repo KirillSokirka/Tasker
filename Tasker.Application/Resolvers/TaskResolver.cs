@@ -12,14 +12,14 @@ namespace Tasker.Application.Resolvers;
 public class TaskResolver : ITaskResolver
 {
     private readonly IResolver<TaskStatus, string> _statusResolver;
-    private readonly IResolver<Project, string> _projectResolver;
+    private readonly IProjectResolver _projectResolver;
     private readonly IResolver<Release, string> _releaseResolver;
     private readonly IEntityRepository<Task> _taskRepository;
     private readonly IUserResolver _userResolver;
     
     public TaskResolver(IEntityRepository<Task> taskRepository, IUserResolver userResolver,
         IResolver<Release, string> releaseResolver, IResolver<TaskStatus, string> statusResolver,
-        IResolver<Project, string> projectResolver)
+        IProjectResolver projectResolver)
     {
         _userResolver = userResolver;
         _releaseResolver = releaseResolver;

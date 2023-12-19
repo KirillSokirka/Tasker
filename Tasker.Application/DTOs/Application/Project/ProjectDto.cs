@@ -11,4 +11,7 @@ public class ProjectDto
     public List<KanbanBoardDto> KanbanBoards { get; set; }
     public List<TaskDto> Tasks { get; set; }
     public List<ReleaseDto> Releases { get; set; } 
+    
+    public List<string>? AssignedProjects { get; set; }
+    public List<string>? UnderControlProjects { get; set; }
 }

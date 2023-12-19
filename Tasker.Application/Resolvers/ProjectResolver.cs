@@ -11,12 +11,10 @@ namespace Tasker.Application.Resolvers;
 public class ProjectResolver : IProjectResolver
 {
     private readonly ApplicationContext _context;
-    private readonly IUserResolver _userResolver;
 
-    public ProjectResolver(ApplicationContext context, IUserResolver userResolver)
+    public ProjectResolver(ApplicationContext context)
     {
         _context = context;
-        _userResolver = userResolver;
     }
 
     public async Task<Project> ResolveAsync(string id)
@@ -37,7 +35,7 @@ public class ProjectResolver : IProjectResolver
             {
                 var newEntity = new AdminProjectUser
                 {
-                    User = await _userResolver.ResolveAsync(entity.UserId),
+                    User = await ResolveUserAsync(entity.UserId),
                     Project = await ResolveAsync(entity.ProjectId),
                     UserId = entity.UserId,
                     ProjectId = entity.ProjectId
@@ -67,7 +65,7 @@ public class ProjectResolver : IProjectResolver
             {
                 var newEntity = new AssignedProjectUser
                 {
-                    User = await _userResolver.ResolveAsync(entity.UserId),
+                    User = await ResolveUserAsync(entity.UserId),
                     Project = await ResolveAsync(entity.ProjectId),
                     UserId = entity.UserId,
                     ProjectId = entity.ProjectId
@@ -83,4 +81,8 @@ public class ProjectResolver : IProjectResolver
 
         return existingEntities;
     }
+    
+    private async Task<User> ResolveUserAsync(string id)
+        => await _context.User.FirstOrDefaultAsync(p => p.Id == id)
+           ?? throw new InvalidEntityException($"Project with id {id} doesnt exists");
 }
