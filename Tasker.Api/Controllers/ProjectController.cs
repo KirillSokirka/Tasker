@@ -7,6 +7,7 @@ using Tasker.Application.Interfaces.Services;
 namespace Tasker.Controllers
 {
     [ApiController]
+    [Authorize]
     [Route("api/projects")]
     public class ProjectController : ControllerBase
     {
@@ -19,8 +20,13 @@ namespace Tasker.Controllers
             _userQuery = userQuery;
         }
 
+        [Authorize(Roles = "SuperAdmin")]
         [HttpGet]
         public async Task<IActionResult> GetAll()
+            => Ok(await _service.GetAllAsync());
+
+        [HttpGet]
+        public async Task<IActionResult> GetAvailable()
         {
             var id = await _userQuery.GetUserId(HttpContext);
 
@@ -47,7 +53,7 @@ namespace Tasker.Controllers
             }
 
             var dto = await _service.GetByIdAsync(id);
-            
+
             return dto is null
                 ? NotFound()
                 : (dto.AssignedProjects ?? new List<string>()).Contains(userId) ||
@@ -56,7 +62,6 @@ namespace Tasker.Controllers
                     : NoContent();
         }
 
-        [Authorize]
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] ProjectCreateDto dto)
         {
@@ -65,7 +70,6 @@ namespace Tasker.Controllers
             return CreatedAtAction(nameof(Get), new { id = createdDto.Id }, createdDto);
         }
 
-        [Authorize(Roles = "SuperAdmin,Admin")]
         [HttpPut]
         public async Task<IActionResult> Update([FromBody] ProjectUpdateDto dto)
         {
@@ -74,7 +78,6 @@ namespace Tasker.Controllers
             return Ok(updatedDto);
         }
 
-        [Authorize(Roles = "SuperAdmin,Admin")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete([FromRoute] string id)
         {
