@@ -22,7 +22,8 @@ public class ProjectRepository : EntityRepository<Project>
     public override async Task<List<Project>> GetAllAsync() =>
         await DbSet
             .Include(p => p.KanbanBoards)
-            .Include(p => p.Tasks)
+            .Include(p => p.Tasks).ThenInclude(p => p.Creator)
+            .Include(p => p.Tasks).ThenInclude(p => p.Assignee)
             .Include(p => p.Releases)
             .Include(p => p.AdminProjectUsers)
             .Include(p => p.AssignedProjectUsers)

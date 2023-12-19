@@ -21,7 +21,7 @@ public class MappingProfile : Profile
                 Id = val.Id,
                 Title = val.Title
             })))
-            .ForMember(t => t.Tasks, src => src.MapFrom(t => t.Tasks.Select(val => new TaskDto
+            .ForMember(t => t.Tasks, src => src.MapFrom(t => t.Tasks == null ? null : t.Tasks.Select(val => new TaskDto
             {
                 Id = val.Id,
                 Title = val.Title!,
@@ -36,10 +36,10 @@ public class MappingProfile : Profile
                 Id = val.Id,
                 Title = val.Title
             })))
-            .ForMember(dest => dest.AssignedProjects, opt => opt.MapFrom(src => src.AssignedProjectUsers != null
+            .ForMember(dest => dest.AssignedProjects, opt => opt.MapFrom(src => src.AssignedProjectUsers != null && src.AssignedProjectUsers.Any()
                 ? src.AssignedProjectUsers.Select(i => i.UserId)
                 : null))
-            .ForMember(dest => dest.UnderControlProjects, opt => opt.MapFrom(src => src.AdminProjectUsers != null
+            .ForMember(dest => dest.UnderControlProjects, opt => opt.MapFrom(src => src.AdminProjectUsers != null && src.AdminProjectUsers.Any()
                 ? src.AdminProjectUsers.Select(i => i.UserId)
                 : null));
 
