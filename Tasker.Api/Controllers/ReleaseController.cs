@@ -22,7 +22,8 @@ namespace Tasker.Controllers
         public async Task<IActionResult> GetAll()
             => Ok(await _service.GetAllAsync());
 
-        [HttpGet] public async Task<IActionResult> GetAllByProject(string projectId)
+        [HttpGet("available/{projectId}")]
+        public async Task<IActionResult> GetAllByProject(string projectId)
         {
             var allReleases = await _service.GetAllAsync();
         

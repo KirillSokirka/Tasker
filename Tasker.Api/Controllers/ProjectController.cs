@@ -25,7 +25,7 @@ namespace Tasker.Controllers
         public async Task<IActionResult> GetAll()
             => Ok(await _service.GetAllAsync());
 
-        [HttpGet]
+        [HttpGet("available")]
         public async Task<IActionResult> GetAvailable()
         {
             var id = await _userQuery.GetUserId(HttpContext);

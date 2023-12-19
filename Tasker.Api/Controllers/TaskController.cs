@@ -16,8 +16,8 @@ public class TaskController : ControllerBase
     {
         _service = service;
     }
-    
-    [HttpGet("{id}")]
+
+    [HttpGet("available/{projectId}")]
     public async Task<IActionResult> GetAllByProject([FromRoute] string projectId)
     {
         var allTasks = await _service.GetAllAsync();
