@@ -6,5 +6,5 @@ namespace Tasker.Application.Interfaces.Resolvers;
 
 public interface IUserResolver : IResolver<User, string>
 {
-    Task<UserResolvedPropertiesDto> ResolveAsync(UserUpdateDto dto);
+    Task<UserResolvedPropertiesDto> ResolveAsync(UserUpdateDto dto, string userId);
 }

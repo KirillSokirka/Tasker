@@ -25,8 +25,9 @@ public class ProjectService : EntityService<Project, ProjectDto>, IProjectServic
             Title = dto.Title
         };
 
-        project.AdminProjectUsers =
-            await _project.ResolveAdminProjectsAsync(p => p.UserId == dto.UserId && p.ProjectId == project.Id,
+        await Repository.AddAsync(project);
+
+        await _project.ResolveAdminProjectsAsync(p => p.UserId == dto.UserId && p.ProjectId == project.Id,
                 new List<UserProjectDto>
                 {
                     new()
@@ -35,8 +36,6 @@ public class ProjectService : EntityService<Project, ProjectDto>, IProjectServic
                         ProjectId = project.Id
                     }
                 });
-
-        await Repository.AddAsync(project);
 
         return (await GetByIdAsync(project.Id))!;
     }
@@ -47,7 +46,7 @@ public class ProjectService : EntityService<Project, ProjectDto>, IProjectServic
                       throw new InvalidEntityException($"The project with id {dto.Id} is not found");
 
         project.Title = dto.Title ?? project.Title;
-        
+
         await Repository.UpdateAsync(project);
 
         return (await GetByIdAsync(project.Id))!;

@@ -22,14 +22,14 @@ public class UserResolver : IUserResolver
         => await _repository.GetByIdAsync(id)
            ?? throw new InvalidEntityException($"The user with {id} was not found");
 
-    public async Task<UserResolvedPropertiesDto> ResolveAsync(UserUpdateDto dto)
+    public async Task<UserResolvedPropertiesDto> ResolveAsync(UserUpdateDto dto, string userId)
         => new()
         {
             AssignedProjects = dto.AssignedProjects is not null
-                ? await _resolver.ResolveAssignedProjectsAsync(p => p.UserId == dto.Id, dto.AssignedProjects)
+                ? await _resolver.ResolveAssignedProjectsAsync(p => p.UserId == userId, dto.AssignedProjects)
                 : null,
             UnderControlProjects = dto.UnderControlProjects is not null 
-                ? await _resolver.ResolveAdminProjectsAsync(p => p.UserId == dto.Id, dto.UnderControlProjects)
+                ? await _resolver.ResolveAdminProjectsAsync(p => p.UserId == userId, dto.UnderControlProjects)
                 : null
         };
 }

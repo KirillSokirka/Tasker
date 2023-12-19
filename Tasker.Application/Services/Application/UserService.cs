@@ -29,14 +29,14 @@ public class UserService : EntityService<User, UserDto>, IUserService
 
     public async Task<UserDto?> UpdateAsync(UserUpdateDto dto)
     {
-        var user = await Repository.GetByIdAsync(dto.Id);
+        var user = (await Repository.FindAsync(u => u.Title == dto.Username)).FirstOrDefault();
 
         if (user is null)
         {
             return null;
         }
 
-        var resolvedProperties = await _resolver.ResolveAsync(dto);
+        var resolvedProperties = await _resolver.ResolveAsync(dto, user.Id);
 
         user.Update(dto, resolvedProperties);
         

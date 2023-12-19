@@ -26,10 +26,10 @@ public class ProjectResolver : IProjectResolver
     {
         var existingEntities = await _context.AdminProjectUsers.Where(predicate).ToListAsync();
 
-        var newEntities = userProjectDto.Where(entity => existingEntities.Exists(exEntity =>
-            exEntity.UserId == entity.UserId && exEntity.ProjectId == entity.UserId)).ToList();
+        var newEntities = userProjectDto.Where(entity => !existingEntities.Exists(exEntity =>
+            exEntity.UserId == entity.UserId && exEntity.ProjectId == entity.ProjectId)).ToList();
 
-        if (!newEntities.Any())
+        if (newEntities.Any())
         {
             foreach (var entity in newEntities)
             {
@@ -56,10 +56,10 @@ public class ProjectResolver : IProjectResolver
     {
         var existingEntities = await _context.AssignedProjectUsers.Where(predicate).ToListAsync();
 
-        var newEntities = userProjectDto.Where(entity => existingEntities.Exists(exEntity =>
-            exEntity.UserId == entity.UserId && exEntity.ProjectId == entity.UserId)).ToList();
+        var newEntities = userProjectDto.Where(entity => !existingEntities.Exists(exEntity =>
+            exEntity.UserId == entity.UserId && exEntity.ProjectId == entity.ProjectId)).ToList();
 
-        if (!newEntities.Any())
+        if (newEntities.Any())
         {
             foreach (var entity in newEntities)
             {

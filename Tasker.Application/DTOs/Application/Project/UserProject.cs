@@ -2,6 +2,6 @@
 
 public class UserProjectDto
 {
-    public required string UserId { get; set; }
+    public string? UserId { get; set; }
     public required string ProjectId { get; set; }
 }
