@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using Tasker.Application.DTOs.Application.Project;
 using Tasker.Application.DTOs.Application.User;
-using Tasker.Application.EntitiesExtension;
 using Tasker.Application.Interfaces;
 using Tasker.Application.Interfaces.Resolvers;
 using Tasker.Domain.Entities.Application;
@@ -43,11 +42,7 @@ public class UserService : EntityService<User, UserDto>, IUserService
             admin: adminProjects,
             assigned: assignedProjects,
             userId: user.Id);
-
-        // user.Update(dto, resolvedProperties);
-        //
-        // await Repository.UpdateAsync(user);
-
+        
         return (await GetByIdAsync(user!.Id))!;
     }
 

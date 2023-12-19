@@ -9,7 +9,7 @@ public class EntityRepository<TEntity> : IEntityRepository<TEntity> where TEntit
     protected readonly DbContext Context;
     protected readonly DbSet<TEntity> DbSet;
 
-    protected EntityRepository(DbContext context)
+    public EntityRepository(DbContext context)
     {
         Context = context;
         DbSet = context.Set<TEntity>();

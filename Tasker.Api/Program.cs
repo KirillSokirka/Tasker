@@ -53,6 +53,8 @@ builder.Services.AddScoped<IEntityRepository<TaskStatus>, TaskStatusRepository>(
 builder.Services.AddScoped<IEntityRepository<KanbanBoard>, KanbanBoardRepository>();
 builder.Services.AddScoped<IEntityRepository<Project>, ProjectRepository>();
 builder.Services.AddScoped<IEntityRepository<Release>, ReleaseRepository>();
+builder.Services.AddScoped<IEntityRepository<AdminProjectUser>, AdminProjectRepository>();
+builder.Services.AddScoped<IEntityRepository<AssignedProjectUser>, AssignedProjectRepository>();
 
 // Services
 builder.Services.AddTransient<IUserAuthService, UserAuthService>();
