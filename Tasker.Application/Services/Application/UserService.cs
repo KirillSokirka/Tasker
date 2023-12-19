@@ -39,30 +39,30 @@ public class UserService : EntityService<User, UserDto>, IUserService
 
         var (adminProjects, assignedProjects) = GetProjects(dto, user.Id);
 
-        var resolvedProperties = await _resolver.ResolveAsync(
+        await _resolver.ResolveAsync(
             admin: adminProjects,
             assigned: assignedProjects,
             userId: user.Id);
 
-        user.Update(dto, resolvedProperties);
-
-        await Repository.UpdateAsync(user);
+        // user.Update(dto, resolvedProperties);
+        //
+        // await Repository.UpdateAsync(user);
 
         return (await GetByIdAsync(user!.Id))!;
     }
 
     private (List<UserProjectDto>?, List<UserProjectDto>?) GetProjects(UserUpdateDto dto, string userId)
     {
-        var adminProjects = (dto.AssignedProjects ?? new List<string>())
+        var assignedProjects = (dto.AssignedProjects ?? new List<string>())
             .Select(project => new UserProjectDto { ProjectId = project, UserId = userId }).ToList();
 
-        var assignedProjects = (dto.UnderControlProjects ?? new List<string>())
+        var adminProjects = (dto.UnderControlProjects ?? new List<string>())
             .Select(project => new UserProjectDto { ProjectId = project, UserId = userId }).ToList();
-
-        if (!adminProjects.Any()) adminProjects = null;
         
         if (!assignedProjects.Any()) assignedProjects = null;
 
+        if (!adminProjects.Any()) adminProjects = null;
+        
         return (adminProjects, assignedProjects);
     }
 }

@@ -1,6 +1,4 @@
-﻿using Tasker.Application.DTOs.Application.Project;
-
-namespace Tasker.Application.DTOs.Application.User;
+﻿namespace Tasker.Application.DTOs.Application.User;
 
 public class UserUpdateDto
 {

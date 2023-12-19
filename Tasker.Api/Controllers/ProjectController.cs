@@ -36,8 +36,8 @@ namespace Tasker.Controllers
             }
 
             var allowedProjects = (await _service.GetAllAsync()).Where(project =>
-                (project.AssignedProjects ?? new List<string>()).Contains(id) ||
-                (project.UnderControlProjects ?? new List<string>()).Contains(id));
+                (project.AssignedUsers ?? new List<string>()).Contains(id) ||
+                (project.AdminProjects ?? new List<string>()).Contains(id));
 
             return allowedProjects.Any() ? Ok(allowedProjects) : NoContent();
         }
@@ -56,8 +56,8 @@ namespace Tasker.Controllers
 
             return dto is null
                 ? NotFound()
-                : (dto.AssignedProjects ?? new List<string>()).Contains(userId) ||
-                  (dto.UnderControlProjects ?? new List<string>()).Contains(userId)
+                : (dto.AssignedUsers ?? new List<string>()).Contains(userId) ||
+                  (dto.AdminProjects ?? new List<string>()).Contains(userId)
                     ? Ok(dto)
                     : NoContent();
         }

@@ -36,10 +36,10 @@ public class MappingProfile : Profile
                 Id = val.Id,
                 Title = val.Title
             })))
-            .ForMember(dest => dest.AssignedProjects, opt => opt.MapFrom(src => src.AssignedProjectUsers != null && src.AssignedProjectUsers.Any()
+            .ForMember(dest => dest.AssignedUsers, opt => opt.MapFrom(src => src.AssignedProjectUsers != null && src.AssignedProjectUsers.Any()
                 ? src.AssignedProjectUsers.Select(i => i.UserId)
                 : null))
-            .ForMember(dest => dest.UnderControlProjects, opt => opt.MapFrom(src => src.AdminProjectUsers != null && src.AdminProjectUsers.Any()
+            .ForMember(dest => dest.AdminProjects, opt => opt.MapFrom(src => src.AdminProjectUsers != null && src.AdminProjectUsers.Any()
                 ? src.AdminProjectUsers.Select(i => i.UserId)
                 : null));
 

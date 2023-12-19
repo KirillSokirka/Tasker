@@ -55,7 +55,7 @@ public class ProjectResolver : IProjectResolver
         Expression<Func<AssignedProjectUser, bool>> predicate, List<UserProjectDto>? userProjectDto)
     {
         var existingEntities = await _context.AssignedProjectUsers.Where(predicate).ToListAsync();
-
+        
         var newEntities = userProjectDto.Where(entity => !existingEntities.Exists(exEntity =>
             exEntity.UserId == entity.UserId && exEntity.ProjectId == entity.ProjectId)).ToList();
 
