@@ -1,10 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Tasker.Application.DTOs.Application.Task;
 using Tasker.Application.Interfaces.Services;
 
 namespace Tasker.Controllers;
 
 [ApiController]
+[Authorize]
 [Route("[controller]")]
 public class TaskController : ControllerBase
 {
@@ -14,11 +16,15 @@ public class TaskController : ControllerBase
     {
         _service = service;
     }
-
-    [HttpGet]
-    public async Task<IActionResult> GetAll()
-        => Ok(await _service.GetAllAsync());
-
+    
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetAllByProject([FromRoute] string projectId)
+    {
+        var allTasks = await _service.GetAllAsync();
+        
+        return Ok(allTasks.Where(t => t.ProjectId == projectId));
+    }
+    
     [HttpGet("{id}")]
     public async Task<IActionResult> Get([FromRoute] string id)
     {
@@ -28,7 +34,7 @@ public class TaskController : ControllerBase
             ? NotFound()
             : Ok(dto);
     }
-
+    
     [HttpPost]
     public async Task<IActionResult> Post([FromBody] TaskCreateDto dto)
     {
@@ -36,17 +42,17 @@ public class TaskController : ControllerBase
 
         return CreatedAtAction(nameof(Get), new { id = createdDto.Id }, createdDto);
     }
-
+    
     [HttpPut]
     public async Task<IActionResult> Update([FromBody] TaskUpdateDto dto)
     {
-        var updatedDto = await _service.UpdateAsync( dto);
+        var updatedDto = await _service.UpdateAsync(dto);
 
         return updatedDto is null
             ? NotFound(new { error = $"Task with id {dto.Id} does not exist" })
             : Ok(updatedDto);
     }
-
+    
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete([FromRoute] string id)
     {
