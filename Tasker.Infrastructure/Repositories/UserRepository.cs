@@ -11,7 +11,7 @@ public class UserRepository : EntityRepository<User>
     { }
 
     public override async Task<User?> GetByIdAsync(string id)
-        => await DbSet.AsNoTracking()
+        => await DbSet //.AsNoTracking()
             .Include(u => u.AssignedProjectUsers)
             .Include(u => u.AdminProjectUsers)
             .FirstOrDefaultAsync(user => user.Id == id);

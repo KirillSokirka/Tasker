@@ -24,6 +24,13 @@ public class TaskController : ControllerBase
         
         return Ok(allTasks.Where(t => t.ProjectId == projectId));
     }
+    [HttpGet("backlog/{projectId}")]
+    public async Task<IActionResult> GetBacklog([FromRoute] string projectId)
+    {
+        var allTasks = await _service.GetAllAsync();
+        
+        return Ok(allTasks.Where(t => t.ProjectId == projectId && t.TaskStatusId is null));
+    }
     
     [HttpGet("{id}")]
     public async Task<IActionResult> Get([FromRoute] string id)

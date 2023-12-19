@@ -1,4 +1,5 @@
-﻿using Tasker.Application.DTOs.Application.ResolvedProperties;
+﻿using Microsoft.IdentityModel.Tokens;
+using Tasker.Application.DTOs.Application.ResolvedProperties;
 using Tasker.Application.DTOs.Application.Task;
 using Tasker.Application.Interfaces.Resolvers;
 using Tasker.Domain.Entities.Application;
@@ -38,7 +39,9 @@ public class TaskResolver : ITaskResolver
             Title = dto.Title,
             Description = dto.Description,
             Creator = await _userResolver.ResolveAsync(dto.CreatorId),
+            CreatorId = dto.CreatorId,
             Project = await _projectResolver.ResolveAsync(dto.ProjectId),
+            ProjectId = dto.ProjectId,
             Release = dto.ReleaseId is null ? null : await _releaseResolver.ResolveAsync(dto.ReleaseId),
             Status = dto.TaskStatusId is null ? null : await _statusResolver.ResolveAsync(dto.TaskStatusId),
             Assignee = dto.AssigneeId is null ? null : await _userResolver.ResolveAsync(dto.AssigneeId)
@@ -48,14 +51,14 @@ public class TaskResolver : ITaskResolver
     {
         var result = new TaskResolvedPropertiesDto
         {
-            Assignee = dto.Assignee?.Id is not null
-                ? await _userResolver.ResolveAsync(dto.Assignee.Id)
+            Assignee = !string.IsNullOrEmpty(dto.AssigneeId)
+                ? await _userResolver.ResolveAsync(dto.AssigneeId)
                 : null,
-            Status = dto.Status?.Id is not null
-                ? await _statusResolver.ResolveAsync(dto.Status.Id)
+            Status = !string.IsNullOrEmpty(dto.StatusId)
+                ? await _statusResolver.ResolveAsync(dto.StatusId)
                 : null,
-            Release = dto.Release?.Id is not null
-                ? await _releaseResolver.ResolveAsync(dto.Release.Id)
+            Release = !string.IsNullOrEmpty(dto.ReleaseId)
+                ? await _releaseResolver.ResolveAsync(dto.ReleaseId)
                 : null
         };
 

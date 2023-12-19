@@ -29,12 +29,12 @@ public class UserResolver : IUserResolver
     {
         if (assigned is not null)
         {
-            await _resolver.ResolveAssignedProjectsAsync(p => p.UserId == userId, assigned);
+            await _resolver.ResolveAssignedProjectsAsync(p => p.UserId == userId && assigned.Select(dto => dto.ProjectId).Contains(p.ProjectId), assigned);
         }
 
         if (admin is not null)
         {
-            await _resolver.ResolveAdminProjectsAsync(p => p.UserId == userId, admin);
+            await _resolver.ResolveAdminProjectsAsync(p => p.UserId == userId && admin.Select(dto => dto.ProjectId).Contains(p.ProjectId), admin);
         }
     }
 }

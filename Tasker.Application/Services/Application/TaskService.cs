@@ -22,7 +22,7 @@ public class TaskService : EntityService<Task, TaskDto>, ITaskService
     {
         var task = await _taskResolver.ResolveAsync(createDto);
         
-        await Repository.UpdateAsync(task);
+        await Repository.AddAsync(task);
 
         return (await GetByIdAsync(task.Id))!;
     }
