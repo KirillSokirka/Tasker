@@ -1,46 +1,77 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Tasker.Application.DTOs.Application.Project;
+using Tasker.Application.Interfaces.Queries;
 using Tasker.Application.Interfaces.Services;
-
 
 namespace Tasker.Controllers
 {
     [ApiController]
+    [Authorize]
     [Route("api/projects")]
     public class ProjectController : ControllerBase
     {
         private readonly IProjectService _service;
+        private readonly IGetUserQuery _userQuery;
 
-        public ProjectController(IProjectService service)
+        public ProjectController(IProjectService service, IGetUserQuery userQuery)
         {
             _service = service;
+            _userQuery = userQuery;
         }
 
+        [Authorize(Roles = "SuperAdmin")]
         [HttpGet]
         public async Task<IActionResult> GetAll()
             => Ok(await _service.GetAllAsync());
 
+        [HttpGet("available")]
+        public async Task<IActionResult> GetAvailable()
+        {
+            var id = await _userQuery.GetUserId(HttpContext);
+
+            if (id is null)
+            {
+                return Unauthorized();
+            }
+
+            var allowedProjects = (await _service.GetAllAsync()).Where(project =>
+                (project.AssignedUsers ?? new List<string>()).Contains(id) ||
+                (project.AdminProjects ?? new List<string>()).Contains(id));
+
+            return allowedProjects.Any() ? Ok(allowedProjects) : NoContent();
+        }
+
         [HttpGet("{id}")]
         public async Task<IActionResult> Get([FromRoute] string id)
         {
+            var userId = await _userQuery.GetUserId(HttpContext);
+
+            if (userId is null)
+            {
+                return Unauthorized();
+            }
+
             var dto = await _service.GetByIdAsync(id);
 
             return dto is null
                 ? NotFound()
-                : Ok(dto);
+                : (dto.AssignedUsers ?? new List<string>()).Contains(userId) ||
+                  (dto.AdminProjects ?? new List<string>()).Contains(userId)
+                    ? Ok(dto)
+                    : NoContent();
         }
-        
-        [Authorize(Roles = "SuperAdmin,Admin")]
+
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] ProjectCreateDto dto)
         {
+            dto.UserId = await _userQuery.GetUserId(HttpContext);
+            
             var createdDto = await _service.CreateAsync(dto);
-
+            
             return CreatedAtAction(nameof(Get), new { id = createdDto.Id }, createdDto);
         }
-        
-        [Authorize(Roles = "SuperAdmin,Admin")]
+
         [HttpPut]
         public async Task<IActionResult> Update([FromBody] ProjectUpdateDto dto)
         {
@@ -48,8 +79,7 @@ namespace Tasker.Controllers
 
             return Ok(updatedDto);
         }
-    
-        [Authorize(Roles = "SuperAdmin,Admin")]
+
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete([FromRoute] string id)
         {

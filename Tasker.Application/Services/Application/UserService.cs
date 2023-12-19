@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
+using Tasker.Application.DTOs.Application.Project;
 using Tasker.Application.DTOs.Application.User;
-using Tasker.Application.EntitiesExtension;
 using Tasker.Application.Interfaces;
 using Tasker.Application.Interfaces.Resolvers;
 using Tasker.Domain.Entities.Application;
@@ -12,7 +12,7 @@ public class UserService : EntityService<User, UserDto>, IUserService
 {
     private readonly IUserResolver _resolver;
 
-    public UserService(IEntityRepository<User> repository, IMapper mapper, 
+    public UserService(IEntityRepository<User> repository, IMapper mapper,
         IUserResolver resolver) : base(repository, mapper)
     {
         _resolver = resolver;
@@ -23,25 +23,41 @@ public class UserService : EntityService<User, UserDto>, IUserService
         var user = Mapper.Map<User>(createDto);
 
         await Repository.AddAsync(user);
-        
+
         return (await GetByIdAsync(user!.Id))!;
     }
 
     public async Task<UserDto?> UpdateAsync(UserUpdateDto dto)
     {
-        var user = await Repository.GetByIdAsync(dto.Id);
+        var user = (await Repository.FindAsync(u => u.Title == dto.Username)).FirstOrDefault();
 
         if (user is null)
         {
             return null;
         }
 
-        var resolvedProperties = await _resolver.ResolveAsync(dto);
+        var (adminProjects, assignedProjects) = GetProjects(dto, user.Id);
 
-        user.Update(dto, resolvedProperties);
-        
-        await Repository.UpdateAsync(user);
+        await _resolver.ResolveAsync(
+            admin: adminProjects,
+            assigned: assignedProjects,
+            userId: user.Id);
         
         return (await GetByIdAsync(user!.Id))!;
+    }
+
+    private (List<UserProjectDto>?, List<UserProjectDto>?) GetProjects(UserUpdateDto dto, string userId)
+    {
+        var assignedProjects = (dto.AssignedProjects ?? new List<string>())
+            .Select(project => new UserProjectDto { ProjectId = project, UserId = userId }).ToList();
+
+        var adminProjects = (dto.UnderControlProjects ?? new List<string>())
+            .Select(project => new UserProjectDto { ProjectId = project, UserId = userId }).ToList();
+        
+        if (!assignedProjects.Any()) assignedProjects = null;
+
+        if (!adminProjects.Any()) adminProjects = null;
+        
+        return (adminProjects, assignedProjects);
     }
 }

@@ -22,6 +22,36 @@ namespace Tasker.Infrastructure.Migrations.ApplicationDb
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("Tasker.Domain.Entities.Application.AdminProjectUser", b =>
+                {
+                    b.Property<string>("ProjectId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("ProjectId", "UserId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("AdminProjectUser");
+                });
+
+            modelBuilder.Entity("Tasker.Domain.Entities.Application.AssignedProjectUser", b =>
+                {
+                    b.Property<string>("ProjectId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("ProjectId", "UserId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("AssignedProjectUser");
+                });
+
             modelBuilder.Entity("Tasker.Domain.Entities.Application.KanbanBoard", b =>
                 {
                     b.Property<string>("Id")
@@ -53,17 +83,7 @@ namespace Tasker.Infrastructure.Migrations.ApplicationDb
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("UserId1")
-                        .HasColumnType("nvarchar(450)");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("UserId");
-
-                    b.HasIndex("UserId1");
 
                     b.ToTable("Projects");
                 });
@@ -188,6 +208,44 @@ namespace Tasker.Infrastructure.Migrations.ApplicationDb
                     b.ToTable("User");
                 });
 
+            modelBuilder.Entity("Tasker.Domain.Entities.Application.AdminProjectUser", b =>
+                {
+                    b.HasOne("Tasker.Domain.Entities.Application.Project", "Project")
+                        .WithMany("AdminProjectUsers")
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Tasker.Domain.Entities.Application.User", "User")
+                        .WithMany("AdminProjectUsers")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Project");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Tasker.Domain.Entities.Application.AssignedProjectUser", b =>
+                {
+                    b.HasOne("Tasker.Domain.Entities.Application.Project", "Project")
+                        .WithMany("AssignedProjectUsers")
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Tasker.Domain.Entities.Application.User", "User")
+                        .WithMany("AssignedProjectUsers")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Project");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("Tasker.Domain.Entities.Application.KanbanBoard", b =>
                 {
                     b.HasOne("Tasker.Domain.Entities.Application.Project", "Project")
@@ -197,17 +255,6 @@ namespace Tasker.Infrastructure.Migrations.ApplicationDb
                         .IsRequired();
 
                     b.Navigation("Project");
-                });
-
-            modelBuilder.Entity("Tasker.Domain.Entities.Application.Project", b =>
-                {
-                    b.HasOne("Tasker.Domain.Entities.Application.User", null)
-                        .WithMany("AssignedProjects")
-                        .HasForeignKey("UserId");
-
-                    b.HasOne("Tasker.Domain.Entities.Application.User", null)
-                        .WithMany("UnderControlProjects")
-                        .HasForeignKey("UserId1");
                 });
 
             modelBuilder.Entity("Tasker.Domain.Entities.Application.Release", b =>
@@ -274,6 +321,10 @@ namespace Tasker.Infrastructure.Migrations.ApplicationDb
 
             modelBuilder.Entity("Tasker.Domain.Entities.Application.Project", b =>
                 {
+                    b.Navigation("AdminProjectUsers");
+
+                    b.Navigation("AssignedProjectUsers");
+
                     b.Navigation("KanbanBoards");
 
                     b.Navigation("Releases");
@@ -293,9 +344,9 @@ namespace Tasker.Infrastructure.Migrations.ApplicationDb
 
             modelBuilder.Entity("Tasker.Domain.Entities.Application.User", b =>
                 {
-                    b.Navigation("AssignedProjects");
+                    b.Navigation("AdminProjectUsers");
 
-                    b.Navigation("UnderControlProjects");
+                    b.Navigation("AssignedProjectUsers");
                 });
 #pragma warning restore 612, 618
         }

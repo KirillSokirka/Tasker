@@ -1,22 +1,23 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Tasker.Application.DTOs.Application.User;
 using Tasker.Application.Interfaces;
+using Tasker.Application.Interfaces.Queries;
 
 namespace Tasker.Controllers;
 
 [ApiController]
-[Authorize(Roles = "SuperAdmin,Admin")]
 [Route("[controller]")]
 public class UserController : ControllerBase
 {
     private readonly IUserService _service;
+    private readonly IGetUserQuery _userQuery;
 
-    public UserController(IUserService service)
+    public UserController(IUserService service, IGetUserQuery userQuery)
     {
         _service = service;
+        _userQuery = userQuery;
     }
-    
+
     [HttpGet("{id}")]
     public async Task<IActionResult> Get([FromRoute] string id)
     {
@@ -41,9 +42,14 @@ public class UserController : ControllerBase
             : Ok(updatedDto);
     } 
     
-    [HttpDelete("{id}")]
-    public async Task<IActionResult> Delete([FromRoute] string id)
+    [HttpDelete("{id?}")]
+    public async Task<IActionResult> Delete([FromRoute] string id = null)
     {
+        if (id == null)
+        {
+            id = await _userQuery.GetUserId(HttpContext);
+        }
+        
         var deleted = await _service.DeleteAsync(id);
 
         return deleted

@@ -17,11 +17,9 @@ public class ApplicationContext : DbContext
     public DbSet<Task> Tasks { get; set; }
     public DbSet<TaskStatus> TaskStatuses { get; set; }
     public DbSet<User> User { get; set; }
-
-    //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) => optionsBuilder
-    //        .UseLazyLoadingProxies(false)
-    //        .UseSqlServer(...);
-
+    public DbSet<AdminProjectUser> AdminProjectUsers { get; set; }
+    public DbSet<AssignedProjectUser> AssignedProjectUsers { get; set; }
+    
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -30,7 +28,7 @@ public class ApplicationContext : DbContext
         ConfigurePropertyConventions(modelBuilder);
         ConfigureRelationships(modelBuilder);
     }
-
+    
     private void ConfigurePrimaryKeys(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<KanbanBoard>().HasKey(e => e.Id);
@@ -38,7 +36,8 @@ public class ApplicationContext : DbContext
         modelBuilder.Entity<Release>().HasKey(e => e.Id);
         modelBuilder.Entity<Task>().HasKey(e => e.Id);
         modelBuilder.Entity<TaskStatus>().HasKey(e => e.Id);
-        modelBuilder.Entity<User>().HasKey(e => e.Id);
+        modelBuilder.Entity<AdminProjectUser>().HasKey(e => new { e.ProjectId, e.UserId});
+        modelBuilder.Entity<AssignedProjectUser>().HasKey(e => new { e.ProjectId, e.UserId});
     }
 
     private void ConfigurePropertyConventions(ModelBuilder modelBuilder)
@@ -132,5 +131,33 @@ public class ApplicationContext : DbContext
             .HasMany(kb => kb.Columns)
             .WithOne(ts => ts.KanbanBoard)
             .HasForeignKey(ts => ts.KanbanBoardId);
+        
+        // Projects and User: Many-to-Many
+        modelBuilder.Entity<AdminProjectUser>()
+            .HasKey(pu => new { pu.ProjectId, pu.UserId });
+
+        modelBuilder.Entity<AdminProjectUser>()
+            .HasOne(pu => pu.Project)
+            .WithMany(p => p.AdminProjectUsers)
+            .HasForeignKey(pu => pu.ProjectId);
+
+        modelBuilder.Entity<AdminProjectUser>()
+            .HasOne(pu => pu.User)
+            .WithMany(u => u.AdminProjectUsers)
+            .HasForeignKey(pu => pu.UserId);
+        
+        modelBuilder.Entity<AssignedProjectUser>()
+            .HasKey(pu => new { pu.ProjectId, pu.UserId });
+
+        modelBuilder.Entity<AssignedProjectUser>()
+            .HasOne(pu => pu.Project)
+            .WithMany(p => p.AssignedProjectUsers)
+            .HasForeignKey(pu => pu.ProjectId);
+
+        modelBuilder.Entity<AssignedProjectUser>()
+            .HasOne(pu => pu.User)
+            .WithMany(u => u.AssignedProjectUsers)
+            .HasForeignKey(pu => pu.UserId);
+        
     }
 }

@@ -49,7 +49,7 @@ public class ReleaseService : EntityService<Release, ReleaseDto>, IReleaseServic
     {
         var result =
             (await Repository.FindAsync(r => r.Title == title && r.ProjectId == projectId))
-            .FirstOrDefault() is not null;
+            .FirstOrDefault() is null;
 
         if (!result)
         {

@@ -1,7 +1,7 @@
 ﻿namespace Tasker.Application.DTOs.Application.Project;
 
-public class ProjectCreateDto
+public class UserProjectDto
 {
-    public required string Title { get; set; }
     public string? UserId { get; set; }
+    public required string ProjectId { get; set; }
 }

@@ -6,6 +6,7 @@ using Tasker.Application.Interfaces.Services;
 namespace Tasker.Controllers
 {
     [ApiController]
+    [Authorize]
     [Route("api/kanbanBoards")]
     public class KanbanBoardController : ControllerBase
     {
@@ -16,9 +17,19 @@ namespace Tasker.Controllers
             _service = service;
         }
 
+        [Authorize(Roles = "SuperAdmin")]
         [HttpGet]
         public async Task<IActionResult> GetAll()
         => Ok(await _service.GetAllAsync());
+
+        [HttpGet("available/{projectId}")]
+        public async Task<IActionResult> GetAllByProject([FromRoute] string projectId)
+        {
+            var allKanbanBoards = await _service.GetAllAsync();
+
+
+            return Ok(allKanbanBoards.Where(b => b.ProjectId == projectId));
+        }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> Get([FromRoute] string id)
@@ -30,7 +41,6 @@ namespace Tasker.Controllers
                 : Ok(dto);
         }
         
-        [Authorize(Roles = "SuperAdmin,Admin")]
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] KanbanBoardCreateDto dto)
         {
@@ -39,7 +49,6 @@ namespace Tasker.Controllers
             return CreatedAtAction(nameof(Get), new { id = createdDto.Id }, createdDto);
         }
         
-        [Authorize(Roles = "SuperAdmin,Admin")]
         [HttpPut]
         public async Task<IActionResult> Update([FromBody] KanbanBoardUpdateDto dto)
         {
@@ -48,7 +57,6 @@ namespace Tasker.Controllers
             return Ok(updatedDto);
         }
         
-        [Authorize(Roles = "SuperAdmin,Admin")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete([FromRoute] string id)
         {

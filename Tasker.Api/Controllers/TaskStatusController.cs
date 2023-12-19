@@ -6,6 +6,7 @@ using Tasker.Application.Interfaces.Services;
 namespace Tasker.Controllers;
 
 [ApiController]
+[Authorize]
 [Route("api/taskStatus")]
 public class TaskStatusController : ControllerBase
 {
@@ -16,12 +17,12 @@ public class TaskStatusController : ControllerBase
         _service = service;
     }
 
-    [Authorize(Roles = "User")]
+    [Authorize(Roles = "SuperAdmin")]
     [HttpGet]
     public async Task<IActionResult> GetAll()
         => Ok(await _service.GetAllAsync());
-
-    [Authorize(Roles = "User")]
+    
+    
     [HttpGet("{id}")]
     public async Task<IActionResult> Get([FromRoute] string id)
     {
@@ -31,8 +32,7 @@ public class TaskStatusController : ControllerBase
             ? NotFound()
             : Ok(dto);
     }
-
-    [Authorize(Roles = "SuperAdmin,Admin")]
+    
     [HttpPost]
     public async Task<IActionResult> Post([FromBody] TaskStatusCreateDto dto)
     {
@@ -40,8 +40,7 @@ public class TaskStatusController : ControllerBase
 
         return Ok(createdDto);
     }
-
-    [Authorize(Roles = "SuperAdmin,Admin")]
+    
     [HttpPut]
     public async Task<IActionResult> Update([FromBody] TaskStatusUpdateDto dto)
     {
@@ -49,8 +48,7 @@ public class TaskStatusController : ControllerBase
 
         return Ok(updatedDto);
     }
-
-    [Authorize(Roles = "SuperAdmin,Admin")]
+    
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete([FromRoute] string id)
     {

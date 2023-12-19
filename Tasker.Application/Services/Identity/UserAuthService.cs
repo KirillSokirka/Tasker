@@ -1,12 +1,12 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Tasker.Application.DTOs.Auth;
 using Tasker.Application.Interfaces;
+using Tasker.Application.Interfaces.Queries;
 using Tasker.Application.Interfaces.Services;
 using Tasker.Domain.Entities.Application;
 using Tasker.Domain.Entities.Identity;
 using Tasker.Domain.Models.Identity;
 using Tasker.Domain.Repositories;
-using Tasker.Infrastructure.Repositories;
 using Task = System.Threading.Tasks.Task;
 
 namespace Tasker.Application.Services;
@@ -16,16 +16,19 @@ public class UserAuthService : IUserAuthService
     private readonly SignInManager<ApplicationUser> _signInManager;
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly IEntityRepository<User> _userRepository;
+    private readonly IGetUserRolesQuery _getUserRolesQuery;
     private readonly ITokenService _tokenService;
 
     public UserAuthService(ITokenService tokenService,
         SignInManager<ApplicationUser> signInManager,
-        UserManager<ApplicationUser> userManager, IEntityRepository<User> userRepository)
+        UserManager<ApplicationUser> userManager, IEntityRepository<User> userRepository,
+        IGetUserRolesQuery getUserRolesQuery)
     {
         _signInManager = signInManager;
         _tokenService = tokenService;
         _userManager = userManager;
         _userRepository = userRepository;
+        _getUserRolesQuery = getUserRolesQuery;
     }
 
     public async Task<IdentityResult> RegisterUserAsync(RegisterModel model)
@@ -33,9 +36,9 @@ public class UserAuthService : IUserAuthService
         var user = new ApplicationUser { UserName = model.Username, Email = model.Email };
 
         var identityResult = await _userManager.CreateAsync(user, model.Password);
-        
+
         await _userManager.AddToRoleAsync(user, "User");
-        
+
         if (identityResult.Succeeded)
         {
             await HandleApplicationUserCreation(user);
@@ -121,7 +124,7 @@ public class UserAuthService : IUserAuthService
         var result = new OperationResult();
 
         var user = await _userManager.FindByEmailAsync(model.Email);
-        
+
         if (user is null)
         {
             result.AddError($"The user with email {model.Email} doesn't exist");
@@ -129,8 +132,12 @@ public class UserAuthService : IUserAuthService
             return result;
         }
 
-        var updateResult = _userManager.AddToRolesAsync(user, model.Roles);
+        var existingRoles = await _getUserRolesQuery.ExecuteAsync(user);
+
+        var newRoles = model.Roles.Except(existingRoles);
         
+        var updateResult = _userManager.AddToRolesAsync(user, newRoles);
+
         if (!updateResult.Result.Succeeded)
         {
             result.AddError("The error during user roles change occured. ");
@@ -138,7 +145,7 @@ public class UserAuthService : IUserAuthService
 
         return result;
     }
-    
+
     #region Private Methods
 
     private async Task HandleApplicationUserCreation(ApplicationUser user)

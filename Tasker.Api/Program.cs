@@ -22,7 +22,6 @@ using Tasker.Infrastructure.Data.Seed;
 using Tasker.Middleware;
 using TaskStatus = Tasker.Domain.Entities.Application.TaskStatus;
 using Task = Tasker.Domain.Entities.Application.Task;
-using Tasker.Application.Resolver;
 using Tasker.Application.Services.Application;
 using Tasker.Domain.Repositories;
 using Tasker.Infrastructure.Repositories;
@@ -43,6 +42,7 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
 // Commands and Queries
 builder.Services.AddTransient<IFindUserByNameQuery, FindUserByNameQuery>();
 builder.Services.AddTransient<IFindByIdQuery, FindUserByIdQuery>();
+builder.Services.AddTransient<IGetUserQuery, GetUserQuery>();
 builder.Services.AddTransient<IGetUserRolesQuery, GetUserRolesQuery>();
 builder.Services.AddTransient<IUpdateUserCommand, UpdateUserCommand>();
 
@@ -53,6 +53,8 @@ builder.Services.AddScoped<IEntityRepository<TaskStatus>, TaskStatusRepository>(
 builder.Services.AddScoped<IEntityRepository<KanbanBoard>, KanbanBoardRepository>();
 builder.Services.AddScoped<IEntityRepository<Project>, ProjectRepository>();
 builder.Services.AddScoped<IEntityRepository<Release>, ReleaseRepository>();
+builder.Services.AddScoped<IEntityRepository<AdminProjectUser>, AdminProjectRepository>();
+builder.Services.AddScoped<IEntityRepository<AssignedProjectUser>, AssignedProjectRepository>();
 
 // Services
 builder.Services.AddTransient<IUserAuthService, UserAuthService>();
@@ -67,7 +69,7 @@ builder.Services.AddScoped<IKanbanBoardService, KanbanBoardService>();
 // Resolvers
 builder.Services.AddScoped<IUserResolver, UserResolver>();
 builder.Services.AddScoped<ITaskResolver, TaskResolver>();
-builder.Services.AddScoped<IResolver<Project, string>, ProjectResolver>();
+builder.Services.AddScoped<IProjectResolver, ProjectResolver>();
 builder.Services.AddScoped<IResolver<Release, string>, ReleaseResolver>();
 builder.Services.AddScoped<IResolver<KanbanBoard, string>, KanbanBoardResolver>();
 builder.Services.AddScoped<IResolver<TaskStatus, string>, TaskStatusResolver>();

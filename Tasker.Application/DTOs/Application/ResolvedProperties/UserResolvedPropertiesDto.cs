@@ -1,7 +1,9 @@
-﻿namespace Tasker.Application.DTOs.Application.ResolvedProperties;
+﻿using Tasker.Domain.Entities.Application;
+
+namespace Tasker.Application.DTOs.Application.ResolvedProperties;
 
 public class UserResolvedPropertiesDto
 {
-    public List<Domain.Entities.Application.Project>? AssignedProjects { get; set; }
-    public List<Domain.Entities.Application.Project>? UnderControlProjects { get; set; }
+    public List<AssignedProjectUser>? AssignedProjects { get; set; }
+    public List<AdminProjectUser>? UnderControlProjects { get; set; }
 }

@@ -7,4 +7,7 @@ public class Project
     public List<KanbanBoard> KanbanBoards { get; set; } = new();
     public List<Task> Tasks { get; set; } = new();
     public List<Release> Releases { get; set; } = new();
+    
+    public List<AssignedProjectUser>? AssignedProjectUsers { get; set; }
+    public List<AdminProjectUser>? AdminProjectUsers { get; set; }
 }

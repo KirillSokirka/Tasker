@@ -11,4 +11,6 @@ public class ProjectDto
     public List<KanbanBoardDto> KanbanBoards { get; set; }
     public List<TaskDto> Tasks { get; set; }
     public List<ReleaseDto> Releases { get; set; } 
+    public List<string>? AssignedUsers { get; set; }
+    public List<string>? AdminProjects { get; set; }
 }
