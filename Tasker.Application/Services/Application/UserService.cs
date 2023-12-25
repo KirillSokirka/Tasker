@@ -3,6 +3,7 @@ using Tasker.Application.DTOs.Application.Project;
 using Tasker.Application.DTOs.Application.User;
 using Tasker.Application.Interfaces;
 using Tasker.Application.Interfaces.Resolvers;
+using Tasker.Application.Interfaces.Services;
 using Tasker.Domain.Entities.Application;
 using Tasker.Domain.Repositories;
 
@@ -11,11 +12,13 @@ namespace Tasker.Application.Services.Application;
 public class UserService : EntityService<User, UserDto>, IUserService
 {
     private readonly IUserResolver _resolver;
-
+    private readonly IUserAuthService _userAuthService;
+    
     public UserService(IEntityRepository<User> repository, IMapper mapper,
-        IUserResolver resolver) : base(repository, mapper)
+        IUserResolver resolver, IUserAuthService userAuthService) : base(repository, mapper)
     {
         _resolver = resolver;
+        _userAuthService = userAuthService;
     }
 
     public async Task<UserDto> CreateAsync(UserDto createDto)
@@ -59,5 +62,21 @@ public class UserService : EntityService<User, UserDto>, IUserService
         if (!adminProjects.Any()) adminProjects = null;
         
         return (adminProjects, assignedProjects);
+    }
+    
+    public new async Task<bool> DeleteAsync(string id)
+    {
+        var entity = await Repository.GetByIdAsync(id);
+        
+        if (entity is not null)
+        {
+            await _userAuthService.DeleteUserAsync(id);
+            
+            await Repository.DeleteAsync(entity);
+            
+            return true;
+        }
+
+        return false;
     }
 }

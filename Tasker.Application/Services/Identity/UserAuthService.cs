@@ -17,18 +17,20 @@ public class UserAuthService : IUserAuthService
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly IEntityRepository<User> _userRepository;
     private readonly IGetUserRolesQuery _getUserRolesQuery;
+    private readonly IFindByIdQuery _findByIdQuery;
     private readonly ITokenService _tokenService;
 
     public UserAuthService(ITokenService tokenService,
         SignInManager<ApplicationUser> signInManager,
         UserManager<ApplicationUser> userManager, IEntityRepository<User> userRepository,
-        IGetUserRolesQuery getUserRolesQuery)
+        IGetUserRolesQuery getUserRolesQuery, IFindByIdQuery findByIdQuery)
     {
         _signInManager = signInManager;
         _tokenService = tokenService;
         _userManager = userManager;
         _userRepository = userRepository;
         _getUserRolesQuery = getUserRolesQuery;
+        _findByIdQuery = findByIdQuery;
     }
 
     public async Task<IdentityResult> RegisterUserAsync(RegisterModel model)
@@ -131,7 +133,7 @@ public class UserAuthService : IUserAuthService
 
             return result;
         }
-
+        
         var existingRoles = await _getUserRolesQuery.ExecuteAsync(user);
 
         var newRoles = model.Roles.Except(existingRoles);
@@ -144,6 +146,18 @@ public class UserAuthService : IUserAuthService
         }
 
         return result;
+    }
+
+    public async Task DeleteUserAsync(string userId)
+    {
+        var user = (await _findByIdQuery.ExecuteAsync(userId))!;
+        
+        var result = await _userManager.DeleteAsync(user);
+        
+        if (!result.Succeeded)
+        {
+            throw new Exception("The error while deleting user occurs");
+        }
     }
 
     #region Private Methods

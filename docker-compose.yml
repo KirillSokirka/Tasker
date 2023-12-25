@@ -7,7 +7,7 @@ services:
       context: .
       dockerfile: Dockerfile
     ports:
-      - "8000:80"
+      - "8188:80"
   
   tasker-db:
       image: mcr.microsoft.com/mssql/server:2019-latest
