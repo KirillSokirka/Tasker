@@ -98,10 +98,9 @@ public class TokenService : ITokenService
     {
         var claims = new List<Claim>
         {
-            new(ClaimTypes.Sid, user.Id),
             new(ClaimTypes.Name, user.UserName!),
             new(JwtRegisteredClaimNames.Email, user.Email!),
-            new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+            new(JwtRegisteredClaimNames.Jti, user.Id)
         };
         
         var roles = await _getUserRolesQuery.ExecuteAsync(user);
