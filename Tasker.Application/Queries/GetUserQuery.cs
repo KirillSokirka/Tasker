@@ -1,11 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
-using System.Text;
-using System.Threading.Tasks;
+using Microsoft.IdentityModel.JsonWebTokens;
 using Tasker.Application.Interfaces.Queries;
 using Tasker.Domain.Entities.Identity;
 
@@ -22,14 +17,14 @@ namespace Tasker.Application.Queries
 
         public async Task<string?> GetUserId(HttpContext context)
         {
-            var userIdClaim = context.User.FindFirst(ClaimTypes.NameIdentifier);
+            var userIdClaim = context.User.FindFirst(JwtRegisteredClaimNames.Jti);
 
             if (userIdClaim is null)
             {
                 return null;
             }
 
-            var user = await _userManager.FindByEmailAsync(userIdClaim.Value);
+            var user = await _userManager.FindByIdAsync(userIdClaim.Value);
 
             return user?.Id;
         }
