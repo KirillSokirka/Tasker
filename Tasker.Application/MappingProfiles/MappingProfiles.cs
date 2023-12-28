@@ -58,7 +58,13 @@ public class MappingProfile : Profile
             .ForMember(dest => dest.Project, opt => opt.MapFrom(src => new ProjectDto
             {
                 Id = src.Id,
-                Title = src.Id
+                Title = src.Id,
+                AssignedUsers = src.Project.AssignedProjectUsers != null ? 
+                    src.Project.AssignedProjectUsers.Select(item => item.UserId).ToList() 
+                    : null,
+                AdminProjects = src.Project.AdminProjectUsers != null ? 
+                    src.Project.AdminProjectUsers.Select(item => item.UserId).ToList() 
+                    : null
             }));
 
         CreateMap<KanbanBoardUpdateDto, KanbanBoard>();

@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Tasker.Application.DTOs.Application.Project;
+using Tasker.Application.DTOs.Application.User;
 using Tasker.Application.Interfaces.Resolvers;
 using Tasker.Application.Interfaces.Services;
 using Tasker.Domain.Entities.Application;
@@ -50,5 +51,17 @@ public class ProjectService : EntityService<Project, ProjectDto>, IProjectServic
         await Repository.UpdateAsync(project);
 
         return (await GetByIdAsync(project.Id))!;
+    }
+
+    public async Task<List<MemberDto>> GetMembersAsync(string projectId)
+    {
+        var project = await Repository.GetByIdAsync(projectId) ??
+                      throw new InvalidEntityException($"The project with id {projectId} is not found");
+
+        return project.AdminProjectUsers?.Select(member => new MemberDto(member.UserId, member.User.Title, true))
+            .Concat(project.AssignedProjectUsers?.Select(
+                member => new MemberDto(member.UserId, member.User.Title, false)) ?? Array.Empty<MemberDto>())
+            .DistinctBy(member => member.Id)
+            .ToList() ?? new List<MemberDto>();
     }
 }

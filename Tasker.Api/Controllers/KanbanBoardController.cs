@@ -26,8 +26,7 @@ namespace Tasker.Controllers
         public async Task<IActionResult> GetAllByProject([FromRoute] string projectId)
         {
             var allKanbanBoards = await _service.GetAllAsync();
-
-
+            
             return Ok(allKanbanBoards.Where(b => b.ProjectId == projectId));
         }
 

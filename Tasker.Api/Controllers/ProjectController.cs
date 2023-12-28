@@ -41,7 +41,15 @@ namespace Tasker.Controllers
 
             return allowedProjects.Any() ? Ok(allowedProjects) : NoContent();
         }
-
+        
+        [HttpGet("project-members/{id}")]
+        public async Task<IActionResult> GetProjectMembers([FromRoute] string id)
+        {
+            var members = await _service.GetMembersAsync(id);
+                
+            return members.Any() ? Ok(members) : NoContent();
+        }
+        
         [HttpGet("{id}")]
         public async Task<IActionResult> Get([FromRoute] string id)
         {
