@@ -29,14 +29,8 @@ public class ReleaseService : EntityService<Release, ReleaseDto>, IReleaseServic
     {
         var release = await Repository.GetByIdAsync(dto.Id) ??
                       throw new InvalidEntityException($"The release with id {dto.Id} is not found");
-
-        if (dto.Title is not null)
-        {
-            await ValidateRelease(dto.Title, dto.ProjectId);
-            
-            release.Title = dto.Title ?? release.Title;
-        }
-        
+           
+        release.Title = dto.Title ?? release.Title;
         release.IsReleased = dto.IsReleased ?? release.IsReleased;
         release.EndDate = dto.EndDate ?? release.EndDate;
         
