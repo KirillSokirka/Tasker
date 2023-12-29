@@ -20,6 +20,9 @@ public class ReleaseService : EntityService<Release, ReleaseDto>, IReleaseServic
 
         var release = Mapper.Map<Release>(dto);
 
+        release.CreationDate = DateTime.Now;
+        release.EndDate = DateTime.Now;
+
         await Repository.AddAsync(release);
 
         return (await GetByIdAsync(release.Id))!;
