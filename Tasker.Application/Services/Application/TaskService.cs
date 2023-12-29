@@ -23,6 +23,7 @@ public class TaskService : EntityService<Task, TaskDto>, ITaskService
         var task = await _taskResolver.ResolveAsync(createDto);
 
         task.CreationDate = DateTime.Now;
+        task.Priority = createDto.Priority;
         
         await Repository.AddAsync(task);
 
