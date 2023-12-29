@@ -43,7 +43,7 @@ public class ProjectService : EntityService<Project, ProjectDto>, IProjectServic
 
     public async Task<ProjectDto> UpdateAsync(ProjectUpdateDto dto)
     {
-        var project = await Repository.GetByIdAsync(dto.Id) ??
+        var project = (await Repository.FindAsync(project => project.Id == dto.Id)).FirstOrDefault() ??
                       throw new InvalidEntityException($"The project with id {dto.Id} is not found");
 
         project.Title = dto.Title ?? project.Title;
