@@ -74,6 +74,7 @@ public class MappingProfile : Profile
             {
                 Id = t.Id,
                 Title = t.Title!,
+                Description = t.Description != null ? t.Description : string.Empty,
                 TaskStatusName = t.Status != null ? t.Status.Name : string.Empty
             })));
         CreateMap<Release, ReleaseCreateDto>().ReverseMap();

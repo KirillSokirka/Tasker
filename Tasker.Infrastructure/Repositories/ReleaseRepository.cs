@@ -12,7 +12,7 @@ public class ReleaseRepository : EntityRepository<Release>
 
     public override async Task<Release?> GetByIdAsync(string id)
         => await DbSet
-            .Include(r => r.Tasks)
+            .Include(r => r.Tasks).ThenInclude( t => t.Status)
             .AsNoTracking()
             .FirstOrDefaultAsync(r => r.Id == id);
 
