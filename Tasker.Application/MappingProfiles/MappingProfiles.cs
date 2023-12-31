@@ -52,7 +52,9 @@ public class MappingProfile : Profile
                     {
                         Id = task.Id,
                         Title = task.Title!,
-                        TaskStatusName = t.Name
+                        TaskStatusName = t.Name,
+                        Priority = task.Priority,
+                        Assignee = task.Assignee != null ? task.Assignee.Title : "No assignee"
                     }).ToList()
                 })))
             .ForMember(dest => dest.Project, opt => opt.MapFrom(src => new ProjectDto
@@ -91,8 +93,8 @@ public class MappingProfile : Profile
             .ForMember(t => t.ProjectId, dto => dto.MapFrom(t => t.Project!.Id))
             .ForMember(t => t.Creator, dto => dto.MapFrom(t => t.Creator))
             .ForMember(t => t.Assignee, dto => dto.MapFrom(t => t.Assignee))
-            .ForMember(t => t.TaskStatusId, dto => dto.MapFrom(t => t.Status != null ? t.Status.Id : null))
-            .ForMember(t => t.ReleaseId, dto => dto.MapFrom(t => t.Release != null ? t.Release.Id : null));
+            .ForMember(t => t.TaskStatus, dto => dto.MapFrom(t => t.Status != null ? new BaseDto(t.Status.Id, t.Status.Name) : null))
+            .ForMember(t => t.Release, dto => dto.MapFrom(t => t.Release != null ? new BaseDto(t.Release.Id, t.Release.Title) : null));
 
         // Task Status
         CreateMap<TaskStatus, TaskStatusCreateDto>().ReverseMap();

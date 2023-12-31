@@ -17,8 +17,8 @@ public static class TaskExtenstion
         task.Assignee = resolvedProperties.Assignee ?? task.Assignee;
         task.AssigneeId = resolvedProperties.Assignee?.Id ?? task.AssigneeId;
         
-        task.Status = resolvedProperties.Status;
-        task.TaskStatusId = resolvedProperties.Status?.Id;
+        task.Status = resolvedProperties.Status ?? task.Status;
+        task.TaskStatusId = resolvedProperties.Status?.Id ?? task.Status?.Id;
         
         task.Release = resolvedProperties.Release ?? task.Release;
         task.ReleaseId = resolvedProperties.Release?.Id ?? task.ReleaseId;

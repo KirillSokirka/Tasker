@@ -15,7 +15,7 @@ public class KanbanBoardRepository : EntityRepository<KanbanBoard>
             .AsNoTracking()
             .Include(t => t.Project).ThenInclude(c => c.AssignedProjectUsers)
             .Include(t => t.Project).ThenInclude(c => c.AdminProjectUsers)
-            .Include(t => t.Columns).ThenInclude(c => c.Tasks)
+            .Include(t => t.Columns).ThenInclude(c => c.Tasks).ThenInclude(c => c.Assignee)
             .AsNoTracking()
             .FirstOrDefaultAsync(p => p.Id == id);
 

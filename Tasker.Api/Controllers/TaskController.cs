@@ -24,12 +24,13 @@ public class TaskController : ControllerBase
         
         return Ok(allTasks.Where(t => t.ProjectId == projectId));
     }
+    
     [HttpGet("backlog/{projectId}")]
     public async Task<IActionResult> GetBacklog([FromRoute] string projectId)
     {
         var allTasks = await _service.GetAllAsync();
         
-        return Ok(allTasks.Where(t => t.ProjectId == projectId && t.TaskStatusId is null));
+        return Ok(allTasks.Where(t => t.ProjectId == projectId && t.TaskStatus is null));
     }
     
     [HttpGet("{id}")]
