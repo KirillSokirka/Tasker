@@ -48,6 +48,7 @@ public class MappingProfile : Profile
                 {
                     Id = t.Id,
                     Name = t.Name,
+                    Order = t.Order,
                     Tasks = t.Tasks.Select(task => new TaskPreviewDto
                     {
                         Id = task.Id,

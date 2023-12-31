@@ -4,6 +4,7 @@ public class TaskStatus
 {
     public string Id { get; set; } = Guid.NewGuid().ToString();
     public string Name { get; set; } = null!;
+    public int Order { get; set; }
     public string KanbanBoardId { get; set; } = null!; 
     public KanbanBoard KanbanBoard { get; set; } = null!; 
     public List<Task> Tasks { get; set; } = new();

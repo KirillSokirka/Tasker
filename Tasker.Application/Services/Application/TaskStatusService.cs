@@ -35,10 +35,14 @@ public class TaskStatusService : EntityService<TaskStatus, TaskStatusDto>, ITask
         var status = await Repository.GetByIdAsync(dto.Id) ?? 
                      throw new InvalidEntityException($"The status with id = {dto.Id} doesn't exits");
 
-        await ValidateTaskStatusAsync(dto.KanbanBoardId, dto.Name ?? null);
+        if (dto.Order == status.Order)
+        {
+            await ValidateTaskStatusAsync(dto.KanbanBoardId, dto.Name ?? null);
+        }
         
         status.Name = dto.Name ?? status.Name;
-
+        status.Order = dto.Order; 
+        
         await Repository.UpdateAsync(status);
         
         return (await GetByIdAsync(status.Id))!;
