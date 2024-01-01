@@ -9,18 +9,18 @@ public static class TaskExtenstion
     public static void Update(this Task task, TaskUpdateDto updateDto,
         TaskResolvedPropertiesDto resolvedProperties)
     {
-        task.Title = updateDto.Title ?? task.Title;
-        task.Description = updateDto.Description ?? task.Description;
-        
+        task.Title = updateDto.Title;
+        task.Description = updateDto.Description;
+
         task.Priority = updateDto.Priority ?? task.Priority;
         
-        task.Assignee = resolvedProperties.Assignee ?? task.Assignee;
-        task.AssigneeId = resolvedProperties.Assignee?.Id ?? task.AssigneeId;
-        
-        task.Status = resolvedProperties.Status ?? task.Status;
-        task.TaskStatusId = resolvedProperties.Status?.Id ?? task.Status?.Id;
-        
-        task.Release = resolvedProperties.Release ?? task.Release;
-        task.ReleaseId = resolvedProperties.Release?.Id ?? task.ReleaseId;
+        task.Assignee = resolvedProperties.Assignee;
+        task.AssigneeId = resolvedProperties.Assignee?.Id;
+
+        task.Status = resolvedProperties.Status;
+        task.TaskStatusId = resolvedProperties.Status?.Id;
+
+        task.Release = resolvedProperties.Release;
+        task.ReleaseId = resolvedProperties.Release?.Id;
     }
 }
