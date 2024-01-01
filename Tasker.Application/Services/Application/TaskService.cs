@@ -32,7 +32,8 @@ public class TaskService : EntityService<Task, TaskDto>, ITaskService
 
     public async Task<TaskDto?> UpdateAsync(TaskUpdateDto dto)
     {
-        var task = await _taskResolver.ResolveAsync(dto.Id);
+        var task = (await Repository.FindAsync(p => p.Id == dto.Id)).FirstOrDefault() 
+                   ?? throw new Exception("The update failed. Try again");
         
         var resolvedProperties = await _taskResolver.ResolveAsync(dto);
 

@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.Linq.Expressions;
+using Microsoft.EntityFrameworkCore;
 using Tasker.Infrastructure.Data.Application;
 using Task = Tasker.Domain.Entities.Application.Task;
 
@@ -18,7 +19,15 @@ public class TaskRepository : EntityRepository<Task>
             .Include(t => t.Creator)
             .Include(t => t.Status)
             .AsNoTracking().FirstOrDefaultAsync(p => p.Id == id);
-
+    
+    public override async Task<List<Task>> FindAsync(Expression<Func<Task, bool>> predicate)
+        => await DbSet
+            .Include(t => t.Project)
+            .Include(t => t.Assignee)
+            .Include(t => t.Release)
+            .Include(t => t.Creator)
+            .Include(t => t.Status).Where(predicate).ToListAsync();
+    
     public override async Task<List<Task>> GetAllAsync() =>
         await DbSet
             .Include(t => t.Project)
