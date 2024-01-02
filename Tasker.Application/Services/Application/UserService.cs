@@ -81,8 +81,6 @@ public class UserService : EntityService<User, UserDto>, IUserService
                 
                 await ProcessRelatedEntities(entity, superAdmin);
                 
-                await Repository.DeleteAsync(entity);
-                
                 await _userAuthService.DeleteUserAsync(id);
             
                 return true;
@@ -136,6 +134,9 @@ public class UserService : EntityService<User, UserDto>, IUserService
                 
                 await connection.ExecuteAsync(insertAdminSql, new { ProjectId = project.Id, SuperAdminId = superAdmin.Id });
             }
+
+            const string deleteUser = "DELETE FROM [dbo].User WHERE Id = @Id";
+            await connection.ExecuteAsync(deleteUser, new { entity.Id });
         }
     }
 }
