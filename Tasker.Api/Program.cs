@@ -23,7 +23,9 @@ using Tasker.Middleware;
 using TaskStatus = Tasker.Domain.Entities.Application.TaskStatus;
 using Task = Tasker.Domain.Entities.Application.Task;
 using Tasker.Application.Services.Application;
+using Tasker.Domain;
 using Tasker.Domain.Repositories;
+using Tasker.Infrastructure.Data.Connection;
 using Tasker.Infrastructure.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -33,6 +35,7 @@ builder.Services.AddDbContext<IdentityContext>(options =>
 
 builder.Services.AddDbContext<ApplicationContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("ApplicationConnection")));
+builder.Services.AddSingleton<IDatabaseConnectionFactory, SqlConnectionFactory>();
 
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
     .AddEntityFrameworkStores<IdentityContext>()

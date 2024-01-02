@@ -51,6 +51,16 @@ public class TaskController : ControllerBase
         return CreatedAtAction(nameof(Get), new { id = createdDto.Id }, createdDto);
     }
     
+    [HttpPut("update-status")]
+    public async Task<IActionResult> UpdateStatus([FromBody] TaskUpdateStatusDto dto)
+    {
+        var updatedDto = await _service.UpdateTaskStatusAsync(dto);
+
+        return updatedDto is null
+            ? NotFound(new { error = $"Task with id {dto.Id} does not exist" })
+            : Ok(updatedDto);
+    }
+    
     [HttpPut]
     public async Task<IActionResult> Update([FromBody] TaskUpdateDto dto)
     {

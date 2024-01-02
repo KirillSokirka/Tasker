@@ -64,4 +64,16 @@ public class TaskResolver : ITaskResolver
 
         return result;
     }
+    
+    public async Task<TaskResolvedPropertiesDto> ResolveStatusAsync(TaskUpdateStatusDto dto)
+    {
+        var result = new TaskResolvedPropertiesDto
+        {
+            Status = !string.IsNullOrEmpty(dto.StatusId)
+                ? await _statusResolver.ResolveAsync(dto.StatusId)
+                : null,
+        };
+
+        return result;
+    }
 }

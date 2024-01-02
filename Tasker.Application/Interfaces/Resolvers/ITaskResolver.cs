@@ -8,4 +8,5 @@ public interface ITaskResolver : IResolver<Task, string>
 {
     Task<TaskResolvedPropertiesDto> ResolveAsync(TaskUpdateDto dto);
     Task<Task> ResolveAsync(TaskCreateDto createDto);
+    Task<TaskResolvedPropertiesDto> ResolveStatusAsync(TaskUpdateStatusDto dto);
 }
